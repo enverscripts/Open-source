@@ -1,61 +1,80 @@
--- Önce bir ScreenGui ve Frame oluşturalım
+-- Roblox Executor için Sürüklenebilir + Açılır Kapanır Team GUI Script
 local Players = game:GetService("Players")
-local Teams = game:GetService("Teams")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TeamsService = game:GetService("Teams")
+local UIS = game:GetService("UserInputService")
+
 local player = Players.LocalPlayer
 
--- ScreenGui oluştur
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "TeamSelectorGui"
-screenGui.Parent = player:WaitForChild("PlayerGui")
+-- RemoteEvent bul veya oluştur
+local changeTeam = ReplicatedStorage:FindFirstChild("ChangeTeam")
+if not changeTeam then
+    changeTeam = Instance.new("RemoteEvent", ReplicatedStorage)
+    changeTeam.Name = "ChangeTeam"
+end
+
+-- GUI oluştur
+local screenGui = Instance.new("ScreenGui", player.PlayerGui)
+screenGui.Name = "TeamGuiExecutor"
+screenGui.ResetOnSpawn = false
 
 -- Ana Frame
-local frame = Instance.new("Frame")
+local frame = Instance.new("Frame", screenGui)
 frame.Size = UDim2.new(0, 300, 0, 400)
 frame.Position = UDim2.new(0.5, -150, 0.5, -200)
-frame.BackgroundColor3 = Color3.new(0, 0, 0) -- Siyah
-frame.Parent = screenGui
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true -- Sürüklenebilir yap
 
--- X butonu
-local closeButton = Instance.new("TextButton")
-closeButton.Size = UDim2.new(0, 30, 0, 30)
-closeButton.Position = UDim2.new(1, -35, 0, 5)
-closeButton.BackgroundColor3 = Color3.fromRGB(255, 100, 100) -- Kırmızımsı beyaz karışımı
-closeButton.Text = "X"
-closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-closeButton.Parent = frame
+-- Aç/Kapa Butonu
+local toggleButton = Instance.new("TextButton", screenGui)
+toggleButton.Size = UDim2.new(0, 100, 0, 40)
+toggleButton.Position = UDim2.new(0, 20, 0, 20)
+toggleButton.Text = "Team GUI"
+toggleButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+toggleButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+toggleButton.Font = Enum.Font.SourceSansBold
+toggleButton.TextSize = 22
+toggleButton.BorderSizePixel = 0
 
-closeButton.MouseButton1Click:Connect(function()
-    screenGui.Enabled = false
-end)
+-- Layout (Butonları düzgün dizmek için)
+local layout = Instance.new("UIListLayout", frame)
+layout.Padding = UDim.new(0, 8)
+layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+layout.VerticalAlignment = Enum.VerticalAlignment.Top
 
--- Takım butonları
-local UIListLayout = Instance.new("UIListLayout")
-UIListLayout.Parent = frame
-UIListLayout.Padding = UDim.new(0, 5)
-UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+-- Tüm takımlar için buton oluştur
+for _, team in ipairs(TeamsService:GetChildren()) do
+    local button = Instance.new("TextButton", frame)
+    button.Size = UDim2.new(0, 250, 0, 50)
+    button.Text = team.Name
+    button.TextColor3 = Color3.fromRGB(0, 0, 0)
+    button.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    button.Font = Enum.Font.SourceSansBold
+    button.TextSize = 24
+    button.BorderSizePixel = 0
 
--- X butonunun önüne boşluk eklemesin diye frame'in içine görünmez bir boş Frame koyalım
-local spacer = Instance.new("Frame")
-spacer.Size = UDim2.new(1, 0, 0, 40)
-spacer.BackgroundTransparency = 1
-spacer.Parent = frame
+    button.MouseButton1Click:Connect(function()
+        -- Local team değiştir
+        player.Team = team
+        player.TeamColor = team.TeamColor
 
--- Teams'lerden butonları oluştur
-for _, team in pairs(Teams:GetChildren()) do
-    if team:IsA("Team") then
-        local teamButton = Instance.new("TextButton")
-        teamButton.Size = UDim2.new(0.8, 0, 0, 40)
-        teamButton.BackgroundColor3 = Color3.new(1, 1, 1) -- Beyaz arka plan istersen bunu değiştirebiliriz
-        teamButton.BackgroundTransparency = 1 -- Buton arkası şeffaf (isteğe göre değiştirebiliriz)
-        teamButton.Text = team.Name
-        teamButton.TextColor3 = Color3.new(1, 1, 1) -- Beyaz yazı
-        teamButton.Parent = frame
+        -- Server'a bildir
+        if changeTeam then
+            changeTeam:FireServer(team.Name)
+        end
 
-        -- Takıma geçme
-        teamButton.MouseButton1Click:Connect(function()
-            player.Team = team
-        end)
-    end
+        -- Yeniden doğ
+        if player.Character then
+            player.Character:BreakJoints()
+        end
+    end)
 end
+
+-- Açılır kapanır sistemi
+local isOpen = true
+toggleButton.MouseButton1Click:Connect(function()
+    isOpen = not isOpen
+    frame.Visible = isOpen
+end)
