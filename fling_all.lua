@@ -10,7 +10,7 @@ gui.ResetOnSpawn = false
 local frame = Instance.new("Frame", gui)
 frame.Size = UDim2.new(0, 420, 0, 320)
 frame.Position = UDim2.new(0.5, -210, 0.5, -160)
-frame.BackgroundColor3 = Color3.fromRGB(180, 180, 180)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 frame.BorderSizePixel = 0
 frame.Active = true
 frame.Draggable = true
@@ -28,7 +28,7 @@ title.BackgroundTransparency = 1
 title.Text = "Fling All Menü"
 title.Font = Enum.Font.GothamBlack
 title.TextSize = 26
-title.TextColor3 = Color3.new(0, 0, 0)
+title.TextColor3 = Color3.new(1, 1, 1)
 
 local closeBtn = Instance.new("TextButton", frame)
 closeBtn.Size = UDim2.new(0, 30, 0, 30)
@@ -63,7 +63,7 @@ signature.BackgroundTransparency = 1
 signature.Text = "Sydearr Sunar"
 signature.Font = Enum.Font.Gotham
 signature.TextSize = 14
-signature.TextColor3 = Color3.new(0, 0, 0)
+signature.TextColor3 = Color3.new(1, 1, 1)
 
 local flingActive = false
 local connection
@@ -81,13 +81,14 @@ flingBtn.MouseButton1Click:Connect(function()
 			for _, plr in ipairs(Players:GetPlayers()) do
 				if plr ~= LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
 					local target = plr.Character.HumanoidRootPart
-					root.CFrame = target.CFrame * CFrame.new(0, 0, 0)
-					root.AssemblyLinearVelocity = Vector3.new(999999, 999999, 999999)
-					for _, part in pairs(char:GetDescendants()) do
-						if part:IsA("BasePart") then
-							part.CanCollide = false
+					root.CFrame = target.CFrame * CFrame.new(math.random(-3,3),0,math.random(-3,3))
+					root.Velocity = Vector3.new(999999,999999,999999)
+					for _, v in pairs(char:GetDescendants()) do
+						if v:IsA("BasePart") then
+							v.CanCollide = false
 						end
 					end
+					task.wait(0.01)
 				end
 			end
 		end)
@@ -119,7 +120,7 @@ task.spawn(function()
 							spin = Instance.new("BodyAngularVelocity")
 							spin.Name = "Spin"
 							spin.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
-							spin.AngularVelocity = Vector3.new(0, 100, 0)
+							spin.AngularVelocity = Vector3.new(0, 999, 0)
 							spin.Parent = p
 						end
 					end
