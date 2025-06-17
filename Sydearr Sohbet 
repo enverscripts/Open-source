@@ -3,6 +3,7 @@ local Players=game:GetService("Players")
 local player=Players.LocalPlayer
 local API_URL="https://roblox-global-chat-sydearr-default-rtdb.firebaseio.com/messages.json"
 
+local bannedUsers={}
 local function createUICorner(p,r)
 local c=Instance.new("UICorner")
 c.CornerRadius=UDim.new(0,r or 8)
@@ -172,6 +173,7 @@ end
 
 local function sendMessage(text)
 if not text or text=="" then return end
+if bannedUsers[player.Name] then return end
 text=text:sub(1,100)
 local data={username=player.Name,userId=player.UserId,message=text,timestamp=os.time()}
 local json=HttpService:JSONEncode(data)
@@ -187,66 +189,90 @@ container.AutomaticSize=Enum.AutomaticSize.Y
 container.Size=UDim2.new(1,0,0,50)
 createUICorner(container,10)
 
-local profileImg=createProfileImage(msgData.userId)  
-profileImg.Position=UDim2.new(0,8,0,7)  
-profileImg.Parent=container  
+local profileImg=createProfileImage(msgData.userId)
+profileImg.Position=UDim2.new(0,8,0,7)
+profileImg.Parent=container
 
-local nameLabel=Instance.new("TextLabel")  
-nameLabel.Size=UDim2.new(0.5,0,0,18)  
-nameLabel.Position=UDim2.new(0,52,0,6)  
-nameLabel.BackgroundTransparency=1  
-nameLabel.TextColor3=Color3.fromRGB(0,170,255)  
-nameLabel.Font=Enum.Font.GothamBold  
-nameLabel.TextSize=18  
-nameLabel.TextXAlignment=Enum.TextXAlignment.Left  
-nameLabel.Text=msgData.username  
-nameLabel.Parent=container  
+local nameLabel=Instance.new("TextLabel")
+nameLabel.Size=UDim2.new(0.5,0,0,18)
+nameLabel.Position=UDim2.new(0,52,0,6)
+nameLabel.BackgroundTransparency=1
+nameLabel.TextColor3=Color3.fromRGB(0,170,255)
+nameLabel.Font=Enum.Font.GothamBold
+nameLabel.TextSize=18
+nameLabel.TextXAlignment=Enum.TextXAlignment.Left
+nameLabel.Text=msgData.username
+nameLabel.Parent=container
 
-local timeLabel=Instance.new("TextLabel")  
-timeLabel.Size=UDim2.new(0.3,0,0,18)  
-timeLabel.Position=UDim2.new(0.55,0,0,6)  
-timeLabel.BackgroundTransparency=1  
-timeLabel.TextColor3=Color3.fromRGB(150,150,150)  
-timeLabel.Font=Enum.Font.Gotham  
-timeLabel.TextSize=14  
-timeLabel.TextXAlignment=Enum.TextXAlignment.Right  
-timeLabel.Text=formatTime(msgData.timestamp)  
-timeLabel.Parent=container  
+if msgData.username ~= player.Name and bannedUsers[msgData.username] then
+local banLabel=Instance.new("TextLabel")
+banLabel.Size=UDim2.new(0,45,0,18)
+banLabel.Position=UDim2.new(0.5,50,0,6)
+banLabel.BackgroundColor3=Color3.fromRGB(200,40,40)
+banLabel.BorderColor3=Color3.fromRGB(150,0,0)
+banLabel.BorderSizePixel=2
+banLabel.Font=Enum.Font.GothamBlack
+banLabel.TextSize=16
+banLabel.TextColor3=Color3.new(1,1,1)
+banLabel.Text="Ban"
+banLabel.TextWrapped=true
+banLabel.TextXAlignment=Enum.TextXAlignment.Center
+banLabel.TextYAlignment=Enum.TextYAlignment.Center
+banLabel.AnchorPoint=Vector2.new(0,0)
+banLabel.Parent=container
+banLabel.BackgroundTransparency=0
+banLabel.ClipsDescendants=true
+banLabel.AutomaticSize=Enum.AutomaticSize.X
+banLabel.Rotation=0
+local uic=Instance.new("UICorner")
+uic.CornerRadius=UDim.new(0,10)
+uic.Parent=banLabel
+end
 
-local msgLabel=Instance.new("TextLabel")  
-msgLabel.Size=UDim2.new(1,-90,0,0)  
-msgLabel.Position=UDim2.new(0,52,0,22)  
-msgLabel.BackgroundTransparency=1  
-msgLabel.TextColor3=Color3.fromRGB(230,230,230)  
-msgLabel.Font=Enum.Font.Gotham  
-msgLabel.TextSize=18  
-msgLabel.TextWrapped=true  
-msgLabel.TextXAlignment=Enum.TextXAlignment.Left  
-msgLabel.AutomaticSize=Enum.AutomaticSize.Y  
-msgLabel.Text=msgData.message  
-msgLabel.Parent=container  
+local timeLabel=Instance.new("TextLabel")
+timeLabel.Size=UDim2.new(0.3,0,0,18)
+timeLabel.Position=UDim2.new(0.55,0,0,6)
+timeLabel.BackgroundTransparency=1
+timeLabel.TextColor3=Color3.fromRGB(150,150,150)
+timeLabel.Font=Enum.Font.Gotham
+timeLabel.TextSize=14
+timeLabel.TextXAlignment=Enum.TextXAlignment.Right
+timeLabel.Text=formatTime(msgData.timestamp)
+timeLabel.Parent=container
 
-local copyBtn=Instance.new("TextButton")  
-copyBtn.Size=UDim2.new(0,30,0,30)  
-copyBtn.Position=UDim2.new(1,-40,1,-40)  
-copyBtn.Text="📋"  
-copyBtn.BackgroundColor3=Color3.fromRGB(60,60,60)  
-copyBtn.TextColor3=Color3.new(1,1,1)  
-copyBtn.Font=Enum.Font.GothamBold  
-copyBtn.TextSize=18  
-copyBtn.AutoButtonColor=true  
-copyBtn.Parent=container  
-createUICorner(copyBtn,6)  
+local msgLabel=Instance.new("TextLabel")
+msgLabel.Size=UDim2.new(1,-90,0,0)
+msgLabel.Position=UDim2.new(0,52,0,22)
+msgLabel.BackgroundTransparency=1
+msgLabel.TextColor3=Color3.fromRGB(230,230,230)
+msgLabel.Font=Enum.Font.Gotham
+msgLabel.TextSize=18
+msgLabel.TextWrapped=true
+msgLabel.TextXAlignment=Enum.TextXAlignment.Left
+msgLabel.AutomaticSize=Enum.AutomaticSize.Y
+msgLabel.Text=msgData.message
+msgLabel.Parent=container
 
-copyBtn.MouseButton1Click:Connect(function()  
-	setclipboard(msgData.message)  
-	if msgData.userId~=player.UserId then  
-		notify("("..msgData.username..") kullanıcısının mesajını kopyaladın")  
-	end  
-end)  
+local copyBtn=Instance.new("TextButton")
+copyBtn.Size=UDim2.new(0,30,0,30)
+copyBtn.Position=UDim2.new(1,-40,1,-40)
+copyBtn.Text="📋"
+copyBtn.BackgroundColor3=Color3.fromRGB(60,60,60)
+copyBtn.TextColor3=Color3.new(1,1,1)
+copyBtn.Font=Enum.Font.GothamBold
+copyBtn.TextSize=18
+copyBtn.AutoButtonColor=true
+copyBtn.Parent=container
+createUICorner(copyBtn,6)
+
+copyBtn.MouseButton1Click:Connect(function()
+setclipboard(msgData.message)
+if msgData.userId~=player.UserId then
+notify("("..msgData.username..") kullanıcısının mesajını kopyaladın")
+end
+end)
 
 return container
-
 end
 
 local existingMessages,lastDisplayedTimestamps,lastMessageUserId={},{}
@@ -267,55 +293,12 @@ table.sort(newMessages,function(a,b)return a.timestamp<b.timestamp end)
 local isAtBottom=ChatBox.CanvasPosition.Y>=ChatBox.CanvasSize.Y.Offset-ChatBox.AbsoluteWindowSize.Y-5
 for _,msg in ipairs(newMessages)do
 if not existingMessages[msg.timestamp]then
+if msg.message:find("<=activeBanHammer=>") then
+bannedUsers[msg.username]=true
+else
 local last=lastDisplayedTimestamps[msg.userId]
 if not last or os.difftime(msg.timestamp,last)>=1 then
 local label=createMessageLabel(msg)
 label.LayoutOrder=#existingMessages+1
 label.Parent=ChatBox
-existingMessages[msg.timestamp]=true
-lastDisplayedTimestamps[msg.userId]=msg.timestamp
-lastMessageUserId=msg.userId
-end
-end
-end
-ChatBox.CanvasSize=UDim2.new(0,0,0,UIList.AbsoluteContentSize.Y)
-if isAtBottom then ChatBox.CanvasPosition=Vector2.new(0,ChatBox.CanvasSize.Y.Offset)end
-end
-
-SendButton.MouseButton1Click:Connect(function()
-local txt=TextBox.Text:gsub("^%s*(.-)%s*$","%1")
-if txt~=""then
-sendMessage(txt)
-TextBox.Text=""
--- Burada Focus'u değiştirme, kullanıcı kendi istediğinde tıklayıp devam etsin
-end
-end)
-
-local function createMinimizedIcon(userId)
-if MinimizedIcon then MinimizedIcon:Destroy() end
-MinimizedIcon = createProfileImage(userId, UDim2.new(0, 40, 0, 40))
-MinimizedIcon.Position = UDim2.new(0, 50, 1, -230) -- Daha yukarı ve ortaya yakın konum
-MinimizedIcon.Parent = ScreenGui
-MinimizedIcon.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
-createUICorner(MinimizedIcon, 10)
-MinimizedIcon.MouseButton1Click:Connect(function()
-MinimizedIcon:Destroy()
-Frame.Visible = true
-end)
-end
-
-MinimizeButton.MouseButton1Click:Connect(function()
-if lastMessageUserId then
-Frame.Visible = false
-createMinimizedIcon(lastMessageUserId)
-end
-end)
-
-task.spawn(function()
-while true do
-task.wait(3)
-updateMessages()
-end
-end)
-
-updateMessages()
+existingMessages[msg.timestamp]=
