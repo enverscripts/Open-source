@@ -1,0 +1,14 @@
+local tool = Instance.new("Tool")
+tool.Name = "To Tool"
+tool.RequiresHandle = false
+
+tool.Activated:Connect(function()
+    local mouse = game.Players.LocalPlayer:GetMouse()
+    local character = game.Players.LocalPlayer.Character
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        local pos = mouse.Hit.Position
+        character:MoveTo(pos)
+    end
+end)
+
+tool.Parent = game.Players.LocalPlayer.Backpack
