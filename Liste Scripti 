@@ -1,0 +1,143 @@
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+local GroupID = 3529061
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+local KaanHub = Instance.new("ScreenGui", PlayerGui)
+KaanHub.Name = "KaanHubV1"
+KaanHub.ResetOnSpawn = false
+
+-- Liste Butonu
+local ListeBtn = Instance.new("TextButton", KaanHub)
+ListeBtn.Size = UDim2.new(0, 100, 0, 30)
+ListeBtn.Position = UDim2.new(0, 10, 0, 10)
+ListeBtn.Text = "📜 Liste"
+ListeBtn.BackgroundColor3 = Color3.fromRGB(20,20,20)
+ListeBtn.TextColor3 = Color3.fromRGB(0,255,0)
+ListeBtn.BorderSizePixel = 0
+
+-- Buton sürükleme için değişkenler
+local dragging = false
+local dragInput, dragStart, startPos
+
+ListeBtn.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = true
+		dragStart = input.Position
+		startPos = ListeBtn.Position
+
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+ListeBtn.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+		dragInput = input
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if input == dragInput and dragging then
+		local delta = input.Position - dragStart
+		local newX = math.clamp(startPos.X.Offset + delta.X, 0, workspace.CurrentCamera.ViewportSize.X - ListeBtn.AbsoluteSize.X)
+		local newY = math.clamp(startPos.Y.Offset + delta.Y, 0, workspace.CurrentCamera.ViewportSize.Y - ListeBtn.AbsoluteSize.Y)
+		ListeBtn.Position = UDim2.new(0, newX, 0, newY)
+	end
+end)
+
+-- Ana Frame (Liste)
+local Frame = Instance.new("Frame", KaanHub)
+Frame.Size = UDim2.new(0, 300, 0, 400)
+Frame.Position = UDim2.new(0, 10, 0, 50)
+Frame.BackgroundColor3 = Color3.fromRGB(10,10,10)
+Frame.Visible = false
+Frame.Active = true
+Frame.Draggable = true
+
+local Title = Instance.new("TextLabel", Frame)
+Title.Size = UDim2.new(1, 0, 0, 30)
+Title.Text = "🚀 Kaan Hub V1.0 🚀"
+Title.TextColor3 = Color3.fromRGB(0,255,255)
+Title.BackgroundColor3 = Color3.fromRGB(25,25,25)
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 14
+
+local Scroll = Instance.new("ScrollingFrame", Frame)
+Scroll.Size = UDim2.new(1,0,1,-30)
+Scroll.Position = UDim2.new(0,0,0,30)
+Scroll.CanvasSize = UDim2.new(0,0,5,0)
+Scroll.ScrollBarThickness = 6
+Scroll.BackgroundColor3 = Color3.fromRGB(15,15,15)
+Scroll.BorderSizePixel = 0
+
+local Ranks = {
+ [1]="OR-1/A Aday", [2]="OR-1/B Acemi Er", [3]="OR-1/C Er", [4]="OR-2 Onbaşı",
+ [5]="OR-3 Uzman Onbaşı", [6]="OR-4 Çavuş", [7]="OR-5 Uzman Çavuş", [8]="OR-6 Astsubay Çavuş",
+ [9]="OR-7 Astsubay Üstçavuş", [10]="OR-8 Astsubay Başçavuş", [11]="OR-9/A Astsubay Kd.Başçavuş",
+ [12]="OR-9/B Astsubay Kd.Başçavuş", [13]="OF-1/A Asteğmen", [14]="OF-1/B Teğmen",
+ [15]="OF-1/C Üsteğmen", [16]="OF-2 Yüzbaşı", [17]="OF-3 Binbaşı", [18]="OF-4 Yarbay",
+ [19]="OF-5 Albay", [20]="OF-6 Tuğgeneral", [21]="OF-7 Tümgeneral",
+ [22]="OF-8 Korgeneral", [23]="OF-9 Orgeneral", [24]="Genelkurmay",
+ [25]="Genelkurmay Başkanı", [26]="Yüksek Askerî Şûra", [255]="Owner"
+}
+
+local function GetEtiket(rank)
+ if rank >= 24 then return "HC"
+ elseif rank >= 20 then return "HR"
+ elseif rank >= 13 then return "MR"
+ elseif rank >= 1 then return "LR"
+ else return "??"
+ end
+end
+
+local function Yenile()
+	Scroll:ClearAllChildren()
+	local y = 0
+	for _,plr in pairs(Players:GetPlayers()) do
+		if plr ~= LocalPlayer then
+			local rank = plr:GetRankInGroup(GroupID)
+			local rutbe = Ranks[rank] or "Rütbe Bulunamadı"
+			local etiket = GetEtiket(rank)
+			local txt = Instance.new("TextLabel", Scroll)
+			txt.Size = UDim2.new(1,-10,0,30)
+			txt.Position = UDim2.new(0,5,0,y)
+			txt.BackgroundColor3 = Color3.fromRGB(30,30,30)
+			txt.TextColor3 = Color3.new(1,1,1)
+			txt.Text = plr.Name.." ["..etiket.."] - "..rutbe
+			txt.TextXAlignment = Enum.TextXAlignment.Left
+			txt.Font = Enum.Font.Gotham
+			txt.TextSize = 14
+			y = y + 32
+		end
+	end
+	Scroll.CanvasSize = UDim2.new(0,0,0,y)
+end
+
+ListeBtn.MouseButton1Click:Connect(function()
+	Frame.Visible = not Frame.Visible
+	if Frame.Visible then
+		Yenile()
+	end
+end)
+
+Players.PlayerAdded:Connect(function()
+	wait(1)
+	if Frame.Visible then Yenile() end
+end)
+
+Players.PlayerRemoving:Connect(function()
+	if Frame.Visible then Yenile() end
+end)
+
+-- Sürekli güncelleme istersen:
+RunService.Heartbeat:Connect(function()
+	if Frame.Visible then
+		Yenile()
+	end
+end)
