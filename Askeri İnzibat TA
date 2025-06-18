@@ -3,16 +3,16 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/voidfriztche/Open-Sou
 local p=game:GetService("Players").LocalPlayer
 local c=p.Character or p.CharacterAdded:Wait()
 c:WaitForChild("HumanoidRootPart").CFrame=CFrame.new(1483.946533203125,13.950504302978516,-1127.7977294921875)
-local t=p:FindFirstChild("Username")
-if t then
-    t=t:FindFirstChild("Head")
-    if t then
-        t=t:FindFirstChild("Nameplate")
-        if t then
-            t=t:FindFirstChild("Frame")
-            if t then
-                t=t:FindFirstChild("Team")
-                if t and t:IsA("TextLabel")or t:IsA("TextBox")then
+local u=p:FindFirstChild(p.Name)
+if u then
+    local h=u:FindFirstChild("Head")
+    if h then
+        local n=h:FindFirstChild("Nameplate")
+        if n then
+            local f=n:FindFirstChild("Frame")
+            if f then
+                local t=f:FindFirstChild("Team")
+                if t and (t:IsA("TextLabel") or t:IsA("TextBox")) then
                     t.Text="Askeri İnzibat"
                     t.TextColor3=Color3.fromRGB(17,17,17)
                 end
