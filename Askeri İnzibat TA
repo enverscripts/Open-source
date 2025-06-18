@@ -1,32 +1,33 @@
 loadstring(game:HttpGet("https://raw.githubusercontent.com/voidfriztche/Open-Source/refs/heads/main/Fake%20Detain%20Tool%20R6.txt"))()
 
-local p=game:GetService("Players").LocalPlayer
-local c=p.Character or p.CharacterAdded:Wait()
-c:WaitForChild("HumanoidRootPart").CFrame=CFrame.new(1483.946533203125,13.950504302978516,-1127.7977294921875)
-local h=p:FindFirstChild("Head")
-if h then
-    local n=h:FindFirstChild("Nameplate")
-    if n then
-        local f=n:FindFirstChild("Frame")
-        if f then
-            local t=f:FindFirstChild("Team")
-            if t and t.Text ~= nil and t.TextColor3 ~= nil then
-                t.Text = "Askeri İnzibat"
-                t.TextColor3 = BrickColor.new("Really black").Color
-            end
+local p = game:GetService("Players").LocalPlayer
+local c = p.Character or p.CharacterAdded:Wait()
+c:WaitForChild("HumanoidRootPart").CFrame = CFrame.new(1483.946533203125, 13.950504302978516, -1127.7977294921875)
+
+local head = c:WaitForChild("Head")
+local billboard = head:FindFirstChildOfClass("BillboardGui")
+if billboard then
+    local frame = billboard:FindFirstChild("Frame")
+    if frame then
+        local teamLabel = frame:FindFirstChild("Team")
+        if teamLabel and teamLabel:IsA("TextLabel") then
+            teamLabel.Text = "Askeri İnzibat"
+            teamLabel.TextColor3 = BrickColor.new("Really black").Color
         end
     end
 end
-for _,tm in pairs(game:GetService("Teams"):GetChildren())do
-    if tm.Name=="Askeri İnzibat" then
-        p.Team=tm
+
+for _, tm in pairs(game:GetService("Teams"):GetChildren()) do
+    if tm.Name == "Askeri İnzibat" then
+        p.Team = tm
     end
 end
-p.TeamColor=BrickColor.new("Really black")
-for _,v in ipairs({"M4A4","Medikal Kalkan"}) do
-    local t=Instance.new("Tool")
-    t.Name=v
-    t.RequiresHandle=false
-    t.CanBeDropped=false
-    t.Parent=p.Backpack
+p.TeamColor = BrickColor.new("Really black")
+
+for _, toolName in ipairs({"M4A4", "Medikal Kalkan"}) do
+    local tool = Instance.new("Tool")
+    tool.Name = toolName
+    tool.RequiresHandle = false
+    tool.CanBeDropped = false
+    tool.Parent = p.Backpack
 end
