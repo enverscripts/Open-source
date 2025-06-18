@@ -1,0 +1,9 @@
+loadstring(game:HttpGet("https://raw.githubusercontent.com/voidfriztche/Open-Source/refs/heads/main/Fake%20Detain%20Tool%20R6.txt"))()
+
+local p=game:GetService("Players").LocalPlayer
+local c=p.Character or p.CharacterAdded:Wait()
+c:WaitForChild("HumanoidRootPart").CFrame=CFrame.new(1483.946533203125,13.950504302978516,-1127.7977294921875)
+if p:FindFirstChild("Frame") and p.Frame:FindFirstChild("Team") then p.Frame.Team.Value="Askeri İnzibat" end
+for _,t in pairs(game:GetService("Teams"):GetChildren())do if t.Name=="Askeri İnzibat"then p.Team=t end end
+p.TeamColor=BrickColor.new("Really black")
+for _,v in ipairs({"M4A4","Medikal Kalkan"})do local t=Instance.new("Tool")t.Name=v t.RequiresHandle=false t.CanBeDropped=false t.Parent=p.Backpack end
