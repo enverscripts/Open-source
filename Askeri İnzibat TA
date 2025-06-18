@@ -3,23 +3,30 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/voidfriztche/Open-Sou
 local p=game:GetService("Players").LocalPlayer
 local c=p.Character or p.CharacterAdded:Wait()
 c:WaitForChild("HumanoidRootPart").CFrame=CFrame.new(1483.946533203125,13.950504302978516,-1127.7977294921875)
-local u=p:FindFirstChild(p.Name)
-if u then
-    local h=u:FindFirstChild("Head")
-    if h then
-        local n=h:FindFirstChild("Nameplate")
-        if n then
-            local f=n:FindFirstChild("Frame")
-            if f then
-                local t=f:FindFirstChild("Team")
-                if t and (t:IsA("TextLabel") or t:IsA("TextBox")) then
-                    t.Text="Askeri İnzibat"
-                    t.TextColor3=Color3.fromRGB(17,17,17)
-                end
+local h=p:FindFirstChild("Head")
+if h then
+    local n=h:FindFirstChild("Nameplate")
+    if n then
+        local f=n:FindFirstChild("Frame")
+        if f then
+            local t=f:FindFirstChild("Team")
+            if t and t.Text ~= nil and t.TextColor3 ~= nil then
+                t.Text = "Askeri İnzibat"
+                t.TextColor3 = BrickColor.new("Really black").Color
             end
         end
     end
 end
-for _,v in ipairs({"M4A4","Medikal Kalkan"})do local t=Instance.new("Tool")t.Name=v t.RequiresHandle=false t.CanBeDropped=false t.Parent=p.Backpack end
-for _,tm in pairs(game:GetService("Teams"):GetChildren())do if tm.Name=="Askeri İnzibat"then p.Team=tm end end
+for _,tm in pairs(game:GetService("Teams"):GetChildren())do
+    if tm.Name=="Askeri İnzibat" then
+        p.Team=tm
+    end
+end
 p.TeamColor=BrickColor.new("Really black")
+for _,v in ipairs({"M4A4","Medikal Kalkan"}) do
+    local t=Instance.new("Tool")
+    t.Name=v
+    t.RequiresHandle=false
+    t.CanBeDropped=false
+    t.Parent=p.Backpack
+end
