@@ -1,0 +1,68 @@
+local a0l1IlI = getfenv and getfenv() or _ENV
+local function ___(s)local b='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';s=string.gsub(s,'[^'..b..'=]','');return (s:gsub('.',function(x)if x=='='then return''end;local r,f='',(b:find(x)-1)for i=6,1,-1 do r=r..(f%2^i - f%2^(i-1)>0 and'1'or'0')end;return r;end):gsub('%d%d%d?%d?%d?%d?%d?%d?',function(x)if#x~=8 then return''end;local c=0;for i=1,8 do c=c+(x:sub(i,i)=='1'and 2^(8-i)or 0)end;return string.char(c)end))end
+
+local lIl1l = game["GetService"](game,___("UGxheWVycyA="))
+local I1l1 = lIl1l["LocalPlayer"]
+local l1I1 = I1l1["Character"] or I1l1["CharacterAdded"]:Wait()
+local __name = ___("QXJkYSBHw7xscmVy")
+local __face = ___("RmFjZQ==")
+local __sound = "rbxassetid://1848354536"
+local __hair = "rbxassetid://17164190497"
+local __pants = "rbxassetid://10378533262"
+
+for _,O0o0 in ipairs(lIl1l["GetPlayers"](lIl1l)) do
+    local Gg = O0o0["FindFirstChild"](O0o0,___("UGxheWVyR3Vp"))
+    if Gg then
+        for _,aAa in ipairs(Gg["GetDescendants"](Gg)) do
+            if aAa["IsA"](aAa,"Frame") and aAa["FindFirstChild"](aAa,"Name") then
+                aAa["Name"] = __name
+                aAa["BackgroundColor3"] = Color3.new(0,0,0)
+            end
+        end
+    end
+end
+
+I1l1["Name"] = __name
+
+local hH = l1I1["FindFirstChild"](l1I1,"Head")
+if hH then
+    for _,xX in ipairs(hH:GetChildren()) do
+        if xX:IsA("BillboardGui") or xX:IsA("SurfaceGui") then
+            for _,yY in ipairs(xX:GetDescendants()) do
+                if yY:IsA("TextLabel") then
+                    yY.Text = __name
+                    yY.TextColor3 = Color3.new(0,0,0)
+                end
+            end
+        end
+    end
+end
+
+local dD = Instance["new"]("Decal", hH)
+dD["Texture"] = __sound
+dD["Name"] = __face
+
+local acc = Instance["new"]("Accessory")
+local hdl = Instance["new"]("Part")
+hdl["Name"] = "Handle"
+hdl["Size"] = Vector3.new(1,1,1)
+hdl["Transparency"] = 1
+hdl["Parent"] = acc
+acc["AttachmentForward"] = Vector3.new(0,0,-1)
+acc["AttachmentPos"] = Vector3.new(0,0.5,0)
+acc["AttachmentRight"] = Vector3.new(1,0,0)
+acc["AttachmentUp"] = Vector3.new(0,1,0)
+acc["Name"] = "Hair"
+acc["Parent"] = l1I1
+local msh = Instance["new"]("SpecialMesh", hdl)
+msh["MeshId"] = __hair
+
+local srt = Instance["new"]("Shirt", l1I1)
+srt["ShirtTemplate"] = __hair
+local pnt = Instance["new"]("Pants", l1I1)
+pnt["PantsTemplate"] = __pants
+
+local sss = Instance["new"]("Sound", I1l1["WaitForChild"](I1l1,"PlayerGui"))
+sss["SoundId"] = __sound
+sss["Volume"] = 5000
+sss:Play()
