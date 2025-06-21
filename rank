@@ -1,0 +1,203 @@
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local camera = workspace.CurrentCamera
+local UIS = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+local viewMode = false
+local targetPlayer = nil
+
+-- GUI Setup
+local screenGui = Instance.new("ScreenGui", game.CoreGui)
+screenGui.ResetOnSpawn = false
+
+local function corner(obj, r)
+local uic = Instance.new("UICorner")
+uic.CornerRadius = r
+uic.Parent = obj
+end
+
+local gui = Instance.new("Frame")
+gui.Size = UDim2.new(0, 300, 0, 220)
+gui.Position = UDim2.new(0.5, 0, 0.5, 0)
+gui.AnchorPoint = Vector2.new(0.5, 0.5)
+gui.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+gui.Parent = screenGui
+corner(gui, UDim.new(0, 15))
+
+local title = Instance.new("TextLabel", gui)
+title.Size = UDim2.new(1, 0, 0, 35)
+title.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+title.Text = "Rank Hunter"
+title.Font = Enum.Font.GothamBlack
+title.TextColor3 = Color3.new(1, 1, 1)
+title.TextSize = 22
+corner(title, UDim.new(0, 15))
+
+local closeBtn = Instance.new("TextButton", gui)
+closeBtn.Size = UDim2.new(0, 30, 0, 30)
+closeBtn.Position = UDim2.new(1, -35, 0, 2)
+closeBtn.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+closeBtn.Text = "X"
+closeBtn.Font = Enum.Font.GothamBlack
+closeBtn.TextSize = 20
+closeBtn.TextColor3 = Color3.new(1, 1, 1)
+corner(closeBtn, UDim.new(0, 15))
+
+local input = Instance.new("TextBox", gui)
+input.Size = UDim2.new(0.9, 0, 0, 35)
+input.Position = UDim2.new(0.05, 0, 0.4, 0)
+input.PlaceholderText = "Username giriniz..."
+input.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+input.TextColor3 = Color3.new(1, 1, 1)
+input.Font = Enum.Font.GothamBlack
+input.TextSize = 18
+input.ClearTextOnFocus = false
+corner(input, UDim.new(0, 12))
+
+local viewBtn = Instance.new("TextButton", gui)
+viewBtn.Size = UDim2.new(0.6, 0, 0, 40)
+viewBtn.Position = UDim2.new(0.2, 0, 0.7, 0)
+viewBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+viewBtn.Text = "View"
+viewBtn.Font = Enum.Font.SourceSansItalic
+viewBtn.TextSize = 20
+viewBtn.TextColor3 = Color3.new(1, 1, 1)
+corner(viewBtn, UDim.new(0, 20))
+
+local footer = Instance.new("TextLabel", gui)
+footer.Size = UDim2.new(1, 0, 0, 20)
+footer.Position = UDim2.new(0, 0, 1, -22)
+footer.BackgroundTransparency = 1
+footer.Text = "By: Enver"
+footer.Font = Enum.Font.GothamBlack
+footer.TextColor3 = Color3.new(1, 1, 1)
+footer.TextSize = 14
+
+-- Kamera Kontrolleri
+local cameraAngle = Vector2.new(0, 0)
+local cameraDistance = 15
+local zoomMin, zoomMax = 3, 70
+
+local dragging = false
+local lastMousePos = nil
+
+local function clamp(n, min, max)
+return math.clamp(n, min, max)
+end
+
+local function updateCamera()
+if not viewMode or not targetPlayer or not targetPlayer.Character then return end
+
+local hrp = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+if not hrp then return end
+
+local yaw = math.rad(cameraAngle.X)
+local pitch = math.rad(clamp(cameraAngle.Y, -89, 89))
+
+local offset = Vector3.new(
+math.cos(pitch) * math.sin(yaw),
+math.sin(pitch),
+math.cos(pitch) * math.cos(yaw)
+) * cameraDistance
+
+local camPos = hrp.Position - offset
+camera.CameraType = Enum.CameraType.Scriptable
+camera.CFrame = CFrame.new(camPos, hrp.Position)
+
+end
+
+RunService.RenderStepped:Connect(updateCamera)
+
+-- Mouse Kontrolleri
+UIS.InputBegan:Connect(function(input)
+if not viewMode then return end
+if input.UserInputType == Enum.UserInputType.MouseButton2 then
+dragging = true
+lastMousePos = Vector2.new(input.Position.X, input.Position.Y)
+end
+end)
+
+UIS.InputChanged:Connect(function(input)
+if not viewMode then return end
+if input.UserInputType == Enum.UserInputType.MouseWheel then
+cameraDistance = clamp(cameraDistance - input.Position.Z * 2, zoomMin, zoomMax)
+end
+
+if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+local currentPos = Vector2.new(input.Position.X, input.Position.Y)
+local delta = currentPos - lastMousePos
+lastMousePos = currentPos
+
+cameraAngle = Vector2.new(    
+	cameraAngle.X - delta.X * 0.3,    
+	clamp(cameraAngle.Y - delta.Y * 0.3, -89, 89)    
+)
+
+end
+
+end)
+
+UIS.InputEnded:Connect(function(input)
+if input.UserInputType == Enum.UserInputType.MouseButton2 then
+dragging = false
+end
+end)
+
+-- Dokunmatik Kontroller
+UIS.TouchStarted:Connect(function(touch)
+if not viewMode then return end
+dragging = true
+lastMousePos = touch.Position
+end)
+
+UIS.TouchMoved:Connect(function(touch)
+if not viewMode then return end
+if dragging then
+local delta = touch.Position - touch.PreviousPosition
+cameraAngle = Vector2.new(
+cameraAngle.X - delta.X * 0.3,
+clamp(cameraAngle.Y - delta.Y * 0.3, -89, 89)
+)
+end
+end)
+
+UIS.TouchEnded:Connect(function()
+dragging = false
+end)
+
+-- Nameplate güncelle
+local function updateNameplate(plr)
+if plr and plr.Character then
+local head = plr.Character:FindFirstChild("Head")
+if head then
+local nameplate = head:FindFirstChild("Nameplate")
+if nameplate and nameplate:FindFirstChild("Frame") and nameplate.Frame:FindFirstChild("Name") then
+nameplate.Frame.Name.Text = LocalPlayer.Name
+end
+end
+end
+end
+
+-- View butonuna basılınca
+viewBtn.MouseButton1Click:Connect(function()
+local inputName = input.Text
+local plr = Players:FindFirstChild(inputName)
+if plr and plr ~= LocalPlayer then
+targetPlayer = plr
+viewMode = true
+cameraAngle = Vector2.new(0, 0)
+cameraDistance = 15
+updateNameplate(plr)
+else
+warn("Oyuncu bulunamadı veya kendinizi izleyemezsiniz.")
+end
+end)
+
+-- Kapatma butonu
+closeBtn.MouseButton1Click:Connect(function()
+viewMode = false
+targetPlayer = nil
+camera.CameraType = Enum.CameraType.Custom
+end)
+
