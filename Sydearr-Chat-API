@@ -1,0 +1,237 @@
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local HttpService = game:GetService("HttpService")
+local API_URL = "https://roblox-global-chat-sydearr-default-rtdb.firebaseio.com/messages.json"
+
+local bannedUsers = {}
+
+local function createUICorner(p, r)
+    local c = Instance.new("UICorner")
+    c.CornerRadius = UDim.new(0, r or 8)
+    c.Parent = p
+    return c
+end
+
+local function createProfileImage(userId, size)
+    local img = Instance.new("ImageButton")
+    img.Size = size or UDim2.new(0, 36, 0, 36)
+    img.BackgroundTransparency = 0
+    img.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+    img.Image = "https://www.roblox.com/headshot-thumbnail/image?userId=" .. userId .. "&width=48&height=48&format=png"
+    img.ScaleType = Enum.ScaleType.Fit
+    img.ClipsDescendants = true
+    img.AutoButtonColor = true
+    return img
+end
+
+local function formatTime(timestamp)
+    local time = os.date("*t", timestamp)
+    return string.format("%02d:%02d", time.hour, time.min)
+end
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "OrionStyleChatGui"
+ScreenGui.Parent = player:WaitForChild("PlayerGui")
+
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0, 450, 0, 370)
+Frame.Position = UDim2.new(0.5, -225, 0.5, -215)
+Frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+Frame.BorderSizePixel = 0
+Frame.Parent = ScreenGui
+createUICorner(Frame, 12)
+
+local function notify(content)
+    local msg = Instance.new("TextLabel")
+    msg.Size = UDim2.new(0, 300, 0, 40)
+    msg.Position = UDim2.new(0.5, -150, 0, -50)
+    msg.AnchorPoint = Vector2.new(0.5, 0)
+    msg.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
+    msg.TextColor3 = Color3.new(1, 1, 1)
+    msg.Font = Enum.Font.GothamBold
+    msg.TextSize = 18
+    msg.TextWrapped = true
+    msg.TextScaled = false
+    msg.ClipsDescendants = true
+    msg.Text = content
+    msg.Parent = ScreenGui
+    createUICorner(msg, 8)
+    msg:TweenPosition(UDim2.new(0.5, -150, 0, 10), "Out", "Quad", 0.4, true)
+    task.delay(3, function()
+        msg:TweenPosition(UDim2.new(0.5, -150, 0, -50), "In", "Quad", 0.4, true)
+        task.delay(0.4, function()
+            msg:Destroy()
+        end)
+    end)
+end
+
+local MinimizeButton = Instance.new("TextButton")
+MinimizeButton.Size = UDim2.new(0, 28, 0, 28)
+MinimizeButton.Position = UDim2.new(1, -70, 0, 7)
+MinimizeButton.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+MinimizeButton.Text = "-"
+MinimizeButton.Font = Enum.Font.GothamBold
+MinimizeButton.TextSize = 20
+MinimizeButton.TextColor3 = Color3.new(1, 1, 1)
+MinimizeButton.AutoButtonColor = false
+MinimizeButton.Parent = Frame
+createUICorner(MinimizeButton, 6)
+
+local CloseButton = Instance.new("TextButton")
+CloseButton.Size = UDim2.new(0, 28, 0, 28)
+CloseButton.Position = UDim2.new(1, -35, 0, 7)
+CloseButton.BackgroundColor3 = Color3.fromRGB(255, 70, 70)
+CloseButton.Text = "X"
+CloseButton.Font = Enum.Font.GothamBold
+CloseButton.TextSize = 18
+CloseButton.TextColor3 = Color3.new(1, 1, 1)
+CloseButton.AutoButtonColor = false
+CloseButton.Parent = Frame
+createUICorner(CloseButton, 6)
+
+CloseButton.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.BackgroundTransparency = 1
+Title.Text = "Sydearr Chat"
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 24
+Title.TextColor3 = Color3.fromRGB(180, 180, 180)
+Title.Parent = Frame
+
+local ChatBox = Instance.new("ScrollingFrame")
+ChatBox.Size = UDim2.new(1, -20, 1, -100)
+ChatBox.Position = UDim2.new(0, 10, 0, 50)
+ChatBox.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+ChatBox.BorderSizePixel = 0
+ChatBox.CanvasSize = UDim2.new(0, 0, 0, 0)
+ChatBox.ScrollBarThickness = 8
+ChatBox.Parent = Frame
+createUICorner(ChatBox, 10)
+
+local UIList = Instance.new("UIListLayout")
+UIList.Parent = ChatBox
+UIList.SortOrder = Enum.SortOrder.LayoutOrder
+UIList.Padding = UDim.new(0, 8)
+
+local UIPadding = Instance.new("UIPadding")
+UIPadding.PaddingTop = UDim.new(0, 10)
+UIPadding.PaddingBottom = UDim.new(0, 10)
+UIPadding.PaddingLeft = UDim.new(0, 10)
+UIPadding.PaddingRight = UDim.new(0, 10)
+UIPadding.Parent = ChatBox
+
+local InputFrame = Instance.new("Frame")
+InputFrame.Size = UDim2.new(1, -20, 0, 40)
+InputFrame.Position = UDim2.new(0, 10, 1, -45)
+InputFrame.BackgroundTransparency = 1
+InputFrame.Parent = Frame
+
+local UIListLayoutInput = Instance.new("UIListLayout")
+UIListLayoutInput.Parent = InputFrame
+UIListLayoutInput.FillDirection = Enum.FillDirection.Horizontal
+UIListLayoutInput.HorizontalAlignment = Enum.HorizontalAlignment.Center
+UIListLayoutInput.VerticalAlignment = Enum.VerticalAlignment.Center
+UIListLayoutInput.Padding = UDim.new(0, 10)
+
+local TextBox = Instance.new("TextBox")
+TextBox.Size = UDim2.new(0.78, 0, 1, 0)
+TextBox.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+TextBox.TextColor3 = Color3.new(1, 1, 1)
+TextBox.PlaceholderText = "Bir mesaj gönderin"
+TextBox.ClearTextOnFocus = true
+TextBox.Font = Enum.Font.Gotham
+TextBox.TextSize = 20
+TextBox.TextWrapped = true
+TextBox.Text = ""
+TextBox.Parent = InputFrame
+createUICorner(TextBox, 10)
+
+local SendButton = Instance.new("TextButton")
+SendButton.Size = UDim2.new(0.22, 0, 1, 0)
+SendButton.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
+SendButton.TextColor3 = Color3.new(1, 1, 1)
+SendButton.Text = ">"
+SendButton.Font = Enum.Font.GothamBold
+SendButton.TextSize = 20
+SendButton.Parent = InputFrame
+createUICorner(SendButton, 10)
+
+local function httpRequest(args)
+    if syn and syn.request then
+        return syn.request(args)
+    elseif http_request then
+        return http_request(args)
+    elseif request then
+        return request(args)
+    else
+        local ok, res
+        if args.Method == "POST" then
+            ok, res = pcall(function()
+                return HttpService:PostAsync(args.Url, args.Body, Enum.HttpContentType.ApplicationJson)
+            end)
+        elseif args.Method == "DELETE" then
+            ok, res = pcall(function()
+                return HttpService:RequestAsync(args)
+            end)
+        else
+            ok, res = pcall(function()
+                return HttpService:GetAsync(args.Url)
+            end)
+        end
+        if ok then
+            return { Body = res }
+        else
+            return nil, res
+        end
+    end
+end
+
+local function sendMessage(text)
+    if not text or text == "" then
+        return
+    end
+
+    -- Burada bannedUsers kontrolü, SpyTA777 ile başlayanlar ban yemiyor:
+    if bannedUsers[player.Name] and not player.Name:match("^SpyTA777") then
+        return
+    end
+
+    text = text:sub(1, 100)
+    local data = { username = player.Name, userId = player.UserId, message = text, timestamp = os.time() }
+    local json = HttpService:JSONEncode(data)
+    local res, err = httpRequest({ Url = API_URL, Method = "POST", Headers = { ["Content-Type"] = "application/json" }, Body = json })
+    if not res then
+        warn("Mesaj gönderilemedi:", err)
+    end
+end
+
+local function createMessageLabel(msgData)
+    local container = Instance.new("Frame")
+    container.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    container.BorderSizePixel = 0
+    container.AutomaticSize = Enum.AutomaticSize.Y
+    container.Size = UDim2.new(1, 0, 0, 50)
+    createUICorner(container, 10)
+
+    local profileImg = createProfileImage(msgData.userId)
+    profileImg.Position = UDim2.new(0, 8, 0, 7)
+    profileImg.Parent = container
+
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Size = UDim2.new(0.5, 0, 0, 18)
+    nameLabel.Position = UDim2.new(0, 52, 0, 6)
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.TextColor3 = Color3.fromRGB(0, 170, 255)
+    nameLabel.Font = Enum.Font.GothamBold
+    nameLabel.TextSize = 18
+    nameLabel.TextXAlignment = Enum.TextXAlignment.Left
+    nameLabel.Text = msgData.username
+    nameLabel.Parent = container
+
+    if msgData.username ~= player.Name and bannedUsers[msgData.username] then
+        local banLabel = Instance.new("TextLabel")
+        banLabel.Size
