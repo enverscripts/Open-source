@@ -1,0 +1,90 @@
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local GROUP_ID = 3529061
+
+local RankLevels = {
+	LR = {"OR-1/A", "OR-1/B", "OR-1/C", "OR-2", "OR-3", "OR-4", "OR-5", "OR-6", "OR-7", "OR-8", "OR-9/A", "OR-9/B"},
+	MR = {"OF-1/A", "OF-1/B", "OF-1/C", "OF-2", "OF-3", "OF-4", "OF-5"},
+	HR = {"OF-6", "OF-7", "OF-8", "OF-9", "Tuğgeneral", "Tümgeneral", "Korgeneral", "Orgeneral", "Paşa"},
+	HC = {"Genelkurmay", "Genelkurmay Başkanı", "Yüksek Askerî Şûra"}
+}
+
+local function getRankLevel(rank)
+	for level, names in pairs(RankLevels) do
+		for _, name in pairs(names) do
+			if rank == name then
+				return level
+			end
+		end
+	end
+	return "??"
+end
+
+local function createGui()
+	local gui = Instance.new("ScreenGui", game.CoreGui)
+	gui.Name = "ListeGUI"
+
+	local btn = Instance.new("TextButton", gui)
+	btn.Size = UDim2.new(0, 80, 0, 30)
+	btn.Position = UDim2.new(0, 10, 0, 10)
+	btn.Text = "Liste"
+	btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+	btn.TextColor3 = Color3.fromRGB(255, 255, 0)
+	btn.Name = "AçKapatButon"
+
+	local frame = Instance.new("Frame", gui)
+	frame.Size = UDim2.new(0, 350, 0, 400)
+	frame.Position = UDim2.new(0, 100, 0, 100)
+	frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+	frame.Visible = false
+	frame.Active = true
+	frame.Draggable = true
+	frame.Name = "ListePaneli"
+
+	local layout = Instance.new("UIListLayout", frame)
+	layout.Padding = UDim.new(0, 4)
+	layout.SortOrder = Enum.SortOrder.LayoutOrder
+
+	local function updateList()
+		for _, c in pairs(frame:GetChildren()) do
+			if c:IsA("TextLabel") then c:Destroy() end
+		end
+		for _, p in ipairs(Players:GetPlayers()) do
+			coroutine.wrap(function()
+				local rank = p:GetRoleInGroup(GROUP_ID)
+				if rank and rank ~= "" and rank ~= "Guest" then
+					local level = getRankLevel(rank)
+					local label = Instance.new("TextLabel", frame)
+					label.Size = UDim2.new(1, -10, 0, 25)
+					label.BackgroundTransparency = 1
+					label.Text = "["..level.."] "..p.Name.." - "..rank
+					label.TextColor3 = Color3.fromRGB(255, 255, 255)
+					label.TextXAlignment = Enum.TextXAlignment.Left
+				end
+			end)()
+		end
+	end
+
+	btn.MouseButton1Click:Connect(function()
+		frame.Visible = not frame.Visible
+		if frame.Visible then
+			updateList()
+		end
+	end)
+
+	Players.PlayerAdded:Connect(updateList)
+	Players.PlayerRemoving:Connect(updateList)
+
+	-- KICK BUTONU
+	local kickBtn = Instance.new("TextButton", gui)
+	kickBtn.Size = UDim2.new(0, 80, 0, 30)
+	kickBtn.Position = UDim2.new(0, 100, 0, 10)
+	kickBtn.Text = "Kick"
+	kickBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+	kickBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	kickBtn.MouseButton1Click:Connect(function()
+		LocalPlayer:Kick("Kendi isteğinle oyundan atıldın.")
+	end)
+end
+
+createGui()
