@@ -1,0 +1,53 @@
+-- // Ana Ayarlar
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+local humanoid = character:WaitForChild("Humanoid")
+
+local lagEnabled = false -- Başlangıçta lag kapalı
+local lastPosition = humanoidRootPart.Position
+local lastJump = humanoidRootPart.Position
+
+-- // UI oluştur (Lag Aç/Kapa butonu)
+local screenGui = Instance.new("ScreenGui", player.PlayerGui)
+screenGui.ResetOnSpawn = false
+
+local button = Instance.new("TextButton", screenGui)
+button.Size = UDim2.new(0, 200, 0, 50)
+button.Position = UDim2.new(0.5, -100, 0.1, 0)
+button.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+button.TextColor3 = Color3.fromRGB(255, 255, 255)
+button.Text = "Lag Aç"
+button.Font = Enum.Font.GothamBlack
+button.TextScaled = true
+button.BorderSizePixel = 0
+
+-- // Butona tıklayınca lag aç/kapa
+button.MouseButton1Click:Connect(function()
+    lagEnabled = not lagEnabled
+    if lagEnabled then
+        button.Text = "Lag Kapalı"
+        button.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+    else
+        button.Text = "Lag Aç"
+        button.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    end
+end)
+
+-- // Lag sistemi
+game:GetService("RunService").Heartbeat:Connect(function()
+    if humanoidRootPart and lagEnabled then
+        lastPosition = humanoidRootPart.Position
+        wait(2.5) -- 2.5 saniye gecikme! Daha da arttırabiliriz.
+        humanoidRootPart.CFrame = humanoidRootPart.CFrame:Lerp(CFrame.new(lastPosition), 0.2)
+    end
+end)
+
+-- // Zıplama gecikmesi
+humanoid.StateChanged:Connect(function(old, new)
+    if new == Enum.HumanoidStateType.Jumping and lagEnabled then
+        local oldCFrame = humanoidRootPart.CFrame
+        wait(2.5) -- Zıplamada da aynı gecikme
+        humanoidRootPart.CFrame = oldCFrame
+    end
+end)
