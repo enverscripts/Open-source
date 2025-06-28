@@ -1,0 +1,64 @@
+-- GUI'ler
+local plrgui = game.Players.LocalPlayer.PlayerGui
+local gui = Instance.new("ScreenGui")
+local frame = Instance.new("Frame")
+local label = Instance.new("TextLabel")
+local box = Instance.new("TextBox")
+local label2 = Instance.new("TextLabel")
+local events = game.Workspace:WaitForChild("RemoteEvents")
+gui.ResetOnSpawn = false
+ 
+-- Yerleri
+gui.Parent = plrgui
+frame.Parent = gui
+label.Parent = frame
+box.Parent = frame
+label2.Parent = frame
+ 
+-- Frame ayarları
+frame.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+frame.Size = UDim2.new(0, 400, 0, 200)
+frame.Draggable = true
+frame.Active = enabled
+frame.Position = UDim2.new(0.5, -200, 0.5, -100) -- ekranın ortasına yerleştirir
+ 
+-- Başlık yazısı
+label.Text = "| VOID HUB | Team Changer Script"
+label.Size = UDim2.new(1, 0, 0, 40)
+label.Position = UDim2.new(0, 0, 0, 0)
+label.BackgroundTransparency = 1
+label.TextColor3 = Color3.fromRGB(255, 255, 255)
+label.Font = Enum.Font.SourceSansBold
+label.TextScaled = true
+ 
+-- Bilgilendirme yazısı
+label2.Text = "TEAMI AŞAĞIYA YAZ"
+label.Size = UDim2.new(1, 0, 0, 40)
+label2.Position = UDim2.new(0, 0, 0, 50)
+label2.BackgroundTransparency = 1
+label2.TextColor3 = Color3.fromRGB(255, 255, 255)
+label2.Font = Enum.Font.SourceSans
+label2.TextScaled = true
+ 
+-- TextBox (kutu)
+box.Size = UDim2.new(0.8, 0, 0, 40)
+box.Position = UDim2.new(0.1, 0, 0, 110)
+box.BackgroundColor3 = Color3.fromRGB(116, 116, 116)
+box.TextColor3 = Color3.fromRGB(255, 255, 255)
+box.Font = Enum.Font.SourceSans
+box.TextScaled = true
+ 
+-- Team Geçirme
+box.FocusLost:Connect(function(enterPressed)
+	if enterPressed then
+		local istenentakim = box.Text
+		local takim = events:FindFirstChild(istenentakim)
+ 
+		if takim and takim:IsA("RemoteEvent") then
+			takim:FireServer()
+			print("RemoteEvent çalıştırıldı: " .. istenentakim)
+		else
+			warn("RemoteEvent bulunamadı: " .. istenentakim)
+		end
+	end
+end)
