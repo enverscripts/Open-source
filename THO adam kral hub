@@ -1,0 +1,102 @@
+local gui = Instance.new("ScreenGui")
+gui.Name = "THO SCRİPT V.01 GUEST-311 Aİ FE GUİ"
+gui.ResetOnSpawn = false -- GUI artık ölünce kaybolmaz
+
+-- CoreGui'ye eklendiği için her zaman görünür olur
+gui.Parent = game:GetService("CoreGui")
+
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 600, 0, 300)
+frame.Position = UDim2.new(0.5, -300, 0.1, 0)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+
+local layout = Instance.new("UIGridLayout", frame)
+layout.CellSize = UDim2.new(0, 140, 0, 50)
+layout.FillDirection = Enum.FillDirection.Horizontal
+layout.CellPadding = UDim2.new(0, 8, 0, 8)
+layout.StartCorner = Enum.StartCorner.TopLeft
+
+local function createButton(text, callback)
+	local btn = Instance.new("TextButton", frame)
+	btn.Text = text
+	btn.Font = Enum.Font.GothamBold
+	btn.TextScaled = true
+	btn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+	btn.TextColor3 = Color3.new(1, 1, 1)
+	btn.BorderSizePixel = 0
+	btn.MouseButton1Click:Connect(callback)
+end
+
+-- Tüm butonlar aynı şekilde aşağıya ekleniyor
+
+createButton("ASİZ TEAM REMOTE", function()
+	pcall(function() Workspace.takimdegistirici.ASIZ:FireServer() end)
+end)
+
+createButton("İSYANCI REMOTE", function()
+	pcall(function() Workspace.takimdegistirici.RAIDERS:FireServer() end)
+end)
+
+createButton("OKK REMOTE", function()
+	pcall(function() Workspace.takimdegistirici.OKK:FireServer() end)
+end)
+
+createButton("TKS BASE", function()
+	local chr = game.Players.LocalPlayer.Character
+	if chr then chr:MoveTo(Vector3.new(-3047.12, 135.96, -91.19)) end
+end)
+
+createButton("ESP 👤", function()
+	for _, p in pairs(game.Players:GetPlayers()) do
+		if p ~= game.Players.LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+			local esp = Instance.new("BoxHandleAdornment")
+			esp.Size = Vector3.new(4, 6, 2)
+			esp.Adornee = p.Character.HumanoidRootPart
+			esp.AlwaysOnTop = true
+			esp.ZIndex = 5
+			esp.Color3 = Color3.fromRGB(0, 255, 0)
+			esp.Transparency = 0.4
+			esp.Parent = p.Character.HumanoidRootPart
+		end
+	end
+end)
+
+createButton("HİTBOX KAFA", function()
+	for _, p in pairs(game.Players:GetPlayers()) do
+		if p ~= game.Players.LocalPlayer and p.Character and p.Character:FindFirstChild("Head") then
+			local head = p.Character.Head
+			head.Size = Vector3.new(7, 7, 7)
+			head.Transparency = 0.3
+			head.Material = Enum.Material.Neon
+			head.BrickColor = BrickColor.new("Bright red")
+		end
+	end
+end)
+
+local speedLoop = false
+createButton("SPEED HIZ", function()
+	speedLoop = not speedLoop
+	while speedLoop do
+		local hum = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")
+		if hum then hum.WalkSpeed = 70 end
+		wait(0.1)
+	end
+	local hum = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid")
+	if hum then hum.WalkSpeed = 16 end
+end)
+
+local spamLoop = false
+createButton("REMOTE SPAM 🌈", function()
+	spamLoop = not spamLoop
+	while spamLoop do
+		pcall(function()
+			Workspace.takimdegistirici.RAIDERS:FireServer()
+			Workspace.takimdegistirici.OKK:FireServer()
+			Workspace.takimdegistirici.ASIZ:FireServer()
+		end)
+		wait(0.1)
+	end
+end)
