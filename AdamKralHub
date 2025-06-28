@@ -1,0 +1,205 @@
+--// Türk Asker Oyunu Script AdamKral V.2 - Mega Grafik Sürüklenebilir GUI
+local Player = game.Players.LocalPlayer
+local ScreenGui = Instance.new("ScreenGui", Player:WaitForChild("PlayerGui"))
+ScreenGui.Name = "AdamKralGUI"
+
+-- Ana Frame
+local MainFrame = Instance.new("Frame", ScreenGui)
+MainFrame.Size = UDim2.new(0, 460, 0, 320)
+MainFrame.Position = UDim2.new(0.5, -230, 0.5, -160)
+MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.BorderSizePixel = 0
+
+local UICorner = Instance.new("UICorner", MainFrame)
+UICorner.CornerRadius = UDim.new(0, 14)
+
+-- Başlık
+local Title = Instance.new("TextLabel", MainFrame)
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.BackgroundTransparency = 1
+Title.Text = "Türk Asker Oyunu Script AdamKral V.2"
+Title.TextColor3 = Color3.fromRGB(0, 200, 255)
+Title.TextScaled = true
+Title.Font = Enum.Font.GothamBold
+
+-- OYUNA GİRMEK BUTONU
+local JoinBtn = Instance.new("TextButton", MainFrame)
+JoinBtn.Size = UDim2.new(1, -40, 0, 40)
+JoinBtn.Position = UDim2.new(0, 20, 0, 50)
+JoinBtn.Text = "OYUN GİRMEK İÇİN TIKLA"
+JoinBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+JoinBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+JoinBtn.TextScaled = true
+JoinBtn.Font = Enum.Font.GothamBold
+Instance.new("UICorner", JoinBtn)
+
+JoinBtn.MouseButton1Click:Connect(function()
+	game:GetService("TeleportService"):Teleport(99595961421768, Player)
+end)
+
+-- Sekme Butonları
+local Tabs = {"TEAM", "HOME", "OYUNCU"}
+local ActiveTab = nil
+local TabFrames = {}
+
+for i, tabName in ipairs(Tabs) do
+	local TabBtn = Instance.new("TextButton", MainFrame)
+	TabBtn.Size = UDim2.new(0, 130, 0, 30)
+	TabBtn.Position = UDim2.new(0, 20 + (i - 1) * 140, 0, 100)
+	TabBtn.Text = tabName
+	TabBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+	TabBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	TabBtn.TextScaled = true
+	TabBtn.Font = Enum.Font.GothamBold
+	Instance.new("UICorner", TabBtn)
+
+	local TabFrame = Instance.new("Frame", MainFrame)
+	TabFrame.Size = UDim2.new(1, -40, 1, -140)
+	TabFrame.Position = UDim2.new(0, 20, 0, 140)
+	TabFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+	TabFrame.Visible = false
+	Instance.new("UICorner", TabFrame)
+	TabFrames[tabName] = TabFrame
+
+	TabBtn.MouseButton1Click:Connect(function()
+		if ActiveTab then
+			TabFrames[ActiveTab].Visible = false
+		end
+		TabFrame.Visible = true
+		ActiveTab = tabName
+	end)
+end
+
+-- TEAM Sekmesi
+local TeamFrame = TabFrames["TEAM"]
+local teamNames = {"OKK", "ASIZ", "SM", "OG", "DKK"}
+
+for i, name in ipairs(teamNames) do
+	local Btn = Instance.new("TextButton", TeamFrame)
+	Btn.Size = UDim2.new(0, 180, 0, 40)
+	Btn.Position = UDim2.new(0, 20 + ((i - 1) % 2) * 200, 0, 10 + math.floor((i - 1) / 2) * 50)
+	Btn.Text = name
+	Btn.BackgroundColor3 = Color3.fromRGB(0, 150, 80)
+	Btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	Btn.TextScaled = true
+	Btn.Font = Enum.Font.GothamBold
+	Instance.new("UICorner", Btn)
+
+	Btn.MouseButton1Click:Connect(function()
+		workspace.RemoteEvents[name]:FireServer()
+	end)
+end
+
+-- HOME Sekmesi
+local HomeFrame = TabFrames["HOME"]
+local HomeText = Instance.new("TextLabel", HomeFrame)
+HomeText.Size = UDim2.new(1, -20, 1, -20)
+HomeText.Position = UDim2.new(0, 10, 0, 10)
+HomeText.BackgroundTransparency = 1
+HomeText.TextColor3 = Color3.fromRGB(255, 255, 255)
+HomeText.TextScaled = true
+HomeText.Font = Enum.Font.GothamBold
+HomeText.TextWrapped = true
+HomeText.Text = [[
+MERHABA ARKADAŞLAR
+ADAMKRAL HUB V.2 BÖYLE OLDU
+CHAT GPT YARDIM ALINDI
+SİZLERE BU GUİ ÇIKARDIK
+UMARIM BEĞENİRSİNİZ
+]]
+
+-- OYUNCU Sekmesi
+local OyuncuFrame = TabFrames["OYUNCU"]
+
+local SpeedBtn = Instance.new("TextButton", OyuncuFrame)
+SpeedBtn.Size = UDim2.new(1, -40, 0, 40)
+SpeedBtn.Position = UDim2.new(0, 20, 0, 10)
+SpeedBtn.Text = "SPEED MENÜ"
+SpeedBtn.BackgroundColor3 = Color3.fromRGB(200, 100, 0)
+SpeedBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpeedBtn.TextScaled = true
+SpeedBtn.Font = Enum.Font.GothamBold
+Instance.new("UICorner", SpeedBtn)
+
+SpeedBtn.MouseButton1Click:Connect(function()
+	local SpeedGui = Instance.new("ScreenGui", Player.PlayerGui)
+	local SpeedFrame = Instance.new("Frame", SpeedGui)
+	SpeedFrame.Size = UDim2.new(0, 200, 0, 120)
+	SpeedFrame.Position = UDim2.new(0.5, -100, 0.5, -60)
+	SpeedFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+	SpeedFrame.Active = true
+	SpeedFrame.Draggable = true
+	Instance.new("UICorner", SpeedFrame)
+
+	local SpeedBox = Instance.new("TextBox", SpeedFrame)
+	SpeedBox.Size = UDim2.new(0.8, 0, 0.3, 0)
+	SpeedBox.Position = UDim2.new(0.1, 0, 0.1, 0)
+	SpeedBox.PlaceholderText = "Hız gir (örn: 80)"
+	SpeedBox.TextScaled = true
+
+	local SetBtn = Instance.new("TextButton", SpeedFrame)
+	SetBtn.Size = UDim2.new(0.8, 0, 0.3, 0)
+	SetBtn.Position = UDim2.new(0.1, 0, 0.55, 0)
+	SetBtn.Text = "AYARLA"
+	SetBtn.TextScaled = true
+
+	SetBtn.MouseButton1Click:Connect(function()
+		local spd = tonumber(SpeedBox.Text)
+		if spd then
+			Player.Character.Humanoid.WalkSpeed = spd
+		end
+	end)
+end)
+
+local MusicBtn = Instance.new("TextButton", OyuncuFrame)
+MusicBtn.Size = UDim2.new(1, -40, 0, 40)
+MusicBtn.Position = UDim2.new(0, 20, 0, 60)
+MusicBtn.Text = "AC6 FE MUZİK AÇMA"
+MusicBtn.BackgroundColor3 = Color3.fromRGB(90, 20, 200)
+MusicBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+MusicBtn.TextScaled = true
+MusicBtn.Font = Enum.Font.GothamBold
+Instance.new("UICorner", MusicBtn)
+
+MusicBtn.MouseButton1Click:Connect(function()
+	loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-FE-Ac6-Music-Vulnerability-25536"))()
+end)
+
+local MusicCodeBtn = Instance.new("TextButton", OyuncuFrame)
+MusicCodeBtn.Size = UDim2.new(1, -40, 0, 40)
+MusicCodeBtn.Position = UDim2.new(0, 20, 0, 110)
+MusicCodeBtn.Text = "AC6 İÇİN MUZİK KODLARI"
+MusicCodeBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 255)
+MusicCodeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+MusicCodeBtn.TextScaled = true
+MusicCodeBtn.Font = Enum.Font.GothamBold
+Instance.new("UICorner", MusicCodeBtn)
+
+MusicCodeBtn.MouseButton1Click:Connect(function()
+	local Gui = Instance.new("ScreenGui", Player.PlayerGui)
+	local Frame = Instance.new("Frame", Gui)
+	Frame.Size = UDim2.new(0, 300, 0, 220)
+	Frame.Position = UDim2.new(0.5, -150, 0.5, -110)
+	Frame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+	Frame.Active = true
+	Frame.Draggable = true
+	Instance.new("UICorner", Frame)
+
+	local Text = Instance.new("TextLabel", Frame)
+	Text.Size = UDim2.new(1, -20, 1, -20)
+	Text.Position = UDim2.new(0, 10, 0, 10)
+	Text.Text = [[
+ZEN++ DEME - 18160236567
+ZENC+ DEME - 98426051413836
+BİLMİYORUM - 127576709158393
+İDK - 131986289750204
+
+⚠️ IRKÇILIK YOK ⚠️
+]]
+	Text.TextColor3 = Color3.fromRGB(255,255,255)
+	Text.TextScaled = true
+	Text.Font = Enum.Font.Gotham
+	Text.TextWrapped = true
+end)
