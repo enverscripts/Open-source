@@ -1,0 +1,326 @@
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+local Window = Rayfield:CreateWindow({
+    Name = "xxxomer12345678 Script | Ta 🇹🇷",
+    LoadingTitle = "Rayfield Yükleniyor...",
+    LoadingSubtitle = "By ChatGPT",
+    ConfigurationSaving = {
+        Enabled = false,
+    },
+    Discord = {
+        Enabled = false,
+    },
+    KeySystem = false,
+})
+
+Rayfield:Notify({
+    Title = "xxxomer12345678",
+    Content = "SELAMÜN ALEYKÜM",
+    Duration = 7,
+    Image = 4483362458,
+    Actions = {
+        Ignore = {
+            Name = "Tamam",
+            Callback = function() end
+        },
+    },
+})
+
+local Tab1 = Window:CreateTab("Bilgi ⚫", 4483362458)
+
+Tab1:CreateParagraph({
+    Title = "Merhaba!",
+    Content = [[
+Merhaba xxxomer12345678 hub ta için yapıldı  
+Umarım beğenirsiniz  
+Script kullandığınız için teşekkür ederim  
+
+Discord: https://discord.gg/V3Wnvr9rkt  
+
+Sydear Team 👻
+    ]]
+})
+
+Tab1:CreateParagraph({
+    Title = "Yapımcı",
+    Content = [[
+Yardımcı: ai  
+Edit: ben  
+
+🇹🇷🇹🇷🇹🇷🇹🇷🇹🇷🇹🇷🇹🇷🇹🇷🇹🇷🇹🇷🇹🇷🇹🇷🇹🇷🇹🇷🇹🇷
+    ]]
+})
+
+local Tab2 = Window:CreateTab("Oyuncu ⚫", 4483362458)
+
+Tab2:CreateButton({
+    Name = "Sahte %Onur puan",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+        gui.Name = "OnurMenu"
+        gui.ResetOnSpawn = false
+
+        local frame = Instance.new("Frame", gui)
+        frame.Size = UDim2.new(0, 250, 0, 120)
+        frame.Position = UDim2.new(0.5, -125, 0.5, -60)
+        frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        frame.Active = true
+        frame.Draggable = true
+
+        local uiCorner = Instance.new("UICorner", frame)
+        uiCorner.CornerRadius = UDim.new(0, 10)
+
+        local textbox = Instance.new("TextBox", frame)
+        textbox.Size = UDim2.new(0.8, 0, 0, 30)
+        textbox.Position = UDim2.new(0.1, 0, 0.2, 0)
+        textbox.PlaceholderText = "Yeni Onur Puanı Yaz"
+        textbox.Text = ""
+        textbox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        textbox.TextColor3 = Color3.fromRGB(0, 0, 0)
+
+        local applyButton = Instance.new("TextButton", frame)
+        applyButton.Size = UDim2.new(0.6, 0, 0, 30)
+        applyButton.Position = UDim2.new(0.2, 0, 0.6, 0)
+        applyButton.Text = "Uygula"
+        applyButton.BackgroundColor3 = Color3.fromRGB(255, 203, 5)
+        applyButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+
+        applyButton.MouseButton1Click:Connect(function()
+            local input = textbox.Text
+            pcall(function()
+                game:GetService("Players").LocalPlayer.PlayerGui.Frames.Market.Onur.Text = input
+            end)
+        end)
+    end,
+})
+
+local canGosteriliyor = false
+Tab2:CreateButton({
+    Name = "Can görmek ❤️",
+    Callback = function()
+        canGosteriliyor = not canGosteriliyor
+        for _, player in pairs(game.Players:GetPlayers()) do
+            if player.Character and player.Character:FindFirstChild("Head") then
+                if canGosteriliyor then
+                    if not player.Character.Head:FindFirstChild("CanEtiketi") then
+                        local billboard = Instance.new("BillboardGui", player.Character.Head)
+                        billboard.Name = "CanEtiketi"
+                        billboard.Size = UDim2.new(0, 100, 0, 40)
+                        billboard.StudsOffset = Vector3.new(0, 2, 0)
+                        billboard.AlwaysOnTop = true
+
+                        local label = Instance.new("TextLabel", billboard)
+                        label.Size = UDim2.new(1, 0, 1, 0)
+                        label.BackgroundTransparency = 1
+                        label.TextColor3 = Color3.fromRGB(255, 0, 0)
+                        label.TextScaled = true
+                        label.Font = Enum.Font.GothamBold
+                        label.Text = "Can: " .. math.floor(player.Character:FindFirstChildOfClass("Humanoid").Health)
+                    end
+                else
+                    local etiket = player.Character.Head:FindFirstChild("CanEtiketi")
+                    if etiket then
+                        etiket:Destroy()
+                    end
+                end
+            end
+        end
+    end,
+})
+
+Tab2:CreateButton({
+    Name = "Oyun hızlandırma",
+    Callback = function()
+        local ws = game:GetService("Workspace")
+        ws.Gravity = 120
+        game:GetService("RunService"):Set3dRenderingEnabled(true)
+        pcall(function()
+            settings().Physics.ThrottleAdjustTime = 0.1
+            settings().Physics.AllowSleep = false
+        end)
+        game:GetService("Lighting").ClockTime = 14
+        game:GetService("Players").LocalPlayer.Character.Humanoid.WalkSpeed = 50
+        game:GetService("Players").LocalPlayer.Character.Humanoid.JumpPower = 100
+    end,
+})
+
+Tab2:CreateButton({
+    Name = "tum ui açmak",
+    Callback = function()
+        for _, v in pairs(game:GetDescendants()) do
+            if v:IsA("ScreenGui") or v:IsA("BillboardGui") then
+                v.Enabled = true
+            end
+        end
+    end,
+})
+
+Tab2:CreateButton({
+    Name = "Yere düşmeme",
+    Callback = function()
+        local char = game.Players.LocalPlayer.Character
+        if char then
+            for _, part in pairs(char:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = true
+                    part.Anchored = false
+                end
+            end
+            local root = char:FindFirstChild("HumanoidRootPart")
+            if root then
+                local bv = Instance.new("BodyVelocity", root)
+                bv.Velocity = Vector3.new(0, 0.1, 0)
+                bv.MaxForce = Vector3.new(0, math.huge, 0)
+                bv.Name = "AntiFall"
+            end
+        end
+    end,
+})
+
+Tab2:CreateButton({
+    Name = "Ta admini al kendine 😏",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+
+        local hint = Instance.new("Hint", workspace)
+        hint.Text = "Ta Admin aldın! Lütfen ;cmds yazın"
+
+        local sound = Instance.new("Sound", workspace)
+        sound.SoundId = "rbxassetid://86399734003731"
+        sound:Play()
+
+        task.delay(3, function()
+            hint:Destroy()
+            sound:Destroy()
+        end)
+
+        game.Players.PlayerAdded:Connect(function(p)
+            p.Chatted:Connect(function(msg)
+                if msg == ";cmds" then
+                    local m = Instance.new("Message", workspace)
+                    m.Text = ";esp | ;track | ;sit | ;tks | ;biluk | ;onur"
+                    task.delay(4, function() m:Destroy() end)
+                end
+            end)
+        end)
+
+        player.Chatted:Connect(function(msg)
+            if msg == ";cmds" then
+                local m = Instance.new("Message", workspace)
+                m.Text = ";esp | ;track | ;sit | ;tks | ;biluk | ;onur"
+                task.delay(4, function() m:Destroy() end)
+            elseif msg == ";esp" then
+                for _, p in pairs(game.Players:GetPlayers()) do
+                    if p.Character and p.Character:FindFirstChild("Head") then
+                        local b = Instance.new("BillboardGui", p.Character.Head)
+                        b.Name = "ESPTag"
+                        b.Size = UDim2.new(0, 100, 0, 40)
+                        b.StudsOffset = Vector3.new(0, 3, 0)
+                        b.AlwaysOnTop = true
+                        local t = Instance.new("TextLabel", b)
+                        t.Size = UDim2.new(1, 0, 1, 0)
+                        t.Text = p.Name
+                        t.TextColor3 = Color3.new(1, 1, 0)
+                        t.BackgroundTransparency = 1
+                    end
+                end
+            elseif msg == ";track" then
+                local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+                gui.Name = "TrackerMenu"
+                for _, p in pairs(game.Players:GetPlayers()) do
+                    if p ~= player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                        local arrow = Instance.new("BillboardGui", p.Character.HumanoidRootPart)
+                        arrow.Size = UDim2.new(0, 100, 0, 20)
+                        arrow.AlwaysOnTop = true
+                        local label = Instance.new("TextLabel", arrow)
+                        label.Size = UDim2.new(1, 0, 1, 0)
+                        label.Text = "📍 " .. p.Name
+                        label.BackgroundTransparency = 1
+                        label.TextColor3 = Color3.new(0, 1, 0)
+                        arrow.Name = "TrackerArrow"
+                    end
+                end
+                local close = Instance.new("TextButton", gui)
+                close.Size = UDim2.new(0, 120, 0, 40)
+                close.Position = UDim2.new(0.5, -60, 0.9, 0)
+                close.Text = "Takibi Kapat ❌"
+                close.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+                close.MouseButton1Click:Connect(function()
+                    for _, p in pairs(game.Players:GetPlayers()) do
+                        if p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                            local ta = p.Character.HumanoidRootPart:FindFirstChild("TrackerArrow")
+                            if ta then ta:Destroy() end
+                        end
+                    end
+                    gui:Destroy()
+                end)
+            elseif msg == ";sit" then
+                local h = player.Character:FindFirstChildOfClass("Humanoid")
+                if h then h.Sit = true end
+            elseif msg == ";tks" then
+                local root = player.Character:FindFirstChild("HumanoidRootPart")
+                if root then root.CFrame = CFrame.new(3183.08, 35.17, -150.49) end
+            elseif msg == ";biluk" then
+                local char = player.Character
+                if char then
+                    char:FindFirstChildOfClass("Humanoid").DisplayName = "🌀 Billuk"
+                end
+            elseif msg == ";onur" then
+                local texts = {"9m", "8m", "7m", "Boş", "Offf"}
+                local rasgele = texts[math.random(1, #texts)]
+                local onurYaz = player:FindFirstChild("PlayerGui"):FindFirstChild("Frames") and player.PlayerGui.Frames.Market:FindFirstChild("Onur")
+                if onurYaz then
+                    onurYaz.Text = "Onur: " .. rasgele
+                end
+            end
+        end)
+    end,
+})
+
+local Tab3 = Window:CreateTab("Ohters ⚫", 4483362458)
+
+Tab3:CreateButton({
+    Name = "Animasyon r6",
+    Callback = function()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-R6-Animations-FE-pls-join-discord-38339"))()
+    end,
+})
+
+Tab3:CreateButton({
+    Name = "Dayama",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local target = nil
+
+        local shortestDist = math.huge
+        for _, p in pairs(game.Players:GetPlayers()) do
+            if p ~= player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                local dist = (p.Character.HumanoidRootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude
+                if dist < shortestDist then
+                    shortestDist = dist
+                    target = p
+                end
+            end
+        end
+
+        if not target then return end
+
+        local char = player.Character
+        if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+
+        local hrp = char.HumanoidRootPart
+        local targetHRP = target.Character.HumanoidRootPart
+
+        spawn(function()
+            while true do
+                hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 2)
+                wait(1)
+                hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 0.5)
+                wait(1)
+                hrp.CFrame = targetHRP.CFrame * CFrame.new(0, 0, 2)
+                wait(1)
+            end
+        end)
+    end,
+})
