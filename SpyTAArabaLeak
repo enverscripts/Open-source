@@ -1,0 +1,181 @@
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local FlyButton = Instance.new("TextButton")
+local AntiLockButton = Instance.new("TextButton")
+local SpeedLabel = Instance.new("TextLabel")
+local ControlInfoLabel = Instance.new("TextLabel")
+
+local LeftControlGui = Instance.new("ScreenGui")
+local LeftControlFrame = Instance.new("Frame")
+local RotateLeftButton = Instance.new("TextButton")
+local RotateRightButton = Instance.new("TextButton")
+
+local RightControlGui = Instance.new("ScreenGui")
+local RightControlFrame = Instance.new("Frame")
+local ForwardButton = Instance.new("TextButton")
+local BackwardButton = Instance.new("TextButton")
+
+local velocityHandlerName = "VehicleFlyVelocity"
+local gyroHandlerName = "VehicleFlyGyro"
+local VelocityHandler = nil
+local GyroHandler = nil
+local isAntiLockOn = true
+local FlyEnabled = false
+local isMobile = game:GetService("UserInputService").TouchEnabled
+local constantDownVelocity = -10
+
+local baseForwardVelocity = 30
+local baseBackwardVelocity = 20
+local baseRotationSpeed = 0.1
+local maxForwardVelocity = 300
+local maxBackwardVelocity = 150
+local maxRotationSpeed = 2
+local accelerationRate = 0.7
+local decelerationRate = 2.0
+
+local currentForwardVelocity = 0
+local currentBackwardVelocity = 0
+local currentRotationSpeed = 0
+
+local buttonStates = {
+    forward = false,
+    backward = false,
+    rotateLeft = false,
+    rotateRight = false
+}
+
+local lastUpdate = 0
+local accelerationInterval = 0.05
+
+local function initializeGUI()
+    ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    ScreenGui.ResetOnSpawn = false
+
+    MainFrame.Parent = ScreenGui
+    MainFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    MainFrame.Position = UDim2.new(0.5, -100, 0.05, 0)
+    MainFrame.Size = UDim2.new(0, 200, 0, 80)
+    MainFrame.Active = true
+    MainFrame.Draggable = true
+
+    FlyButton.Parent = MainFrame
+    FlyButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+    FlyButton.Size = UDim2.new(0.45, 0, 0.4, 0)
+    FlyButton.Position = UDim2.new(0.025, 0, 0.05, 0)
+    FlyButton.Font = Enum.Font.GothamBold
+    FlyButton.Text = "Kontrol Başlat"
+    FlyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    FlyButton.TextScaled = true
+
+    AntiLockButton.Parent = MainFrame
+    AntiLockButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+    AntiLockButton.Size = UDim2.new(0.45, 0, 0.4, 0)
+    AntiLockButton.Position = UDim2.new(0.525, 0, 0.05, 0)
+    AntiLockButton.Font = Enum.Font.GothamBold
+    AntiLockButton.Text = "(Araç kullanmak için bunu aç) A-L: Açık"
+    AntiLockButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    AntiLockButton.TextScaled = true
+
+    SpeedLabel.Parent = MainFrame
+    SpeedLabel.BackgroundTransparency = 1
+    SpeedLabel.Size = UDim2.new(0.9, 0, 0.4, 0)
+    SpeedLabel.Position = UDim2.new(0.05, 0, 0.5, 0)
+    SpeedLabel.Font = Enum.Font.Gotham
+    SpeedLabel.Text = "Kapalı"
+    SpeedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    SpeedLabel.TextScaled = true
+
+    ControlInfoLabel.Parent = ScreenGui
+    ControlInfoLabel.BackgroundTransparency = 1
+    ControlInfoLabel.Size = UDim2.new(0.4, 0, 0.1, 0)
+    ControlInfoLabel.Position = UDim2.new(0.3, 0, 0.15, 0)
+    ControlInfoLabel.Font = Enum.Font.Gotham
+    ControlInfoLabel.Text = "PC Kontroller: W/A/S/D"
+    ControlInfoLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    ControlInfoLabel.TextScaled = true
+    ControlInfoLabel.Visible = not isMobile
+
+    if isMobile then
+        LeftControlGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+        LeftControlGui.ResetOnSpawn = false
+        LeftControlGui.Enabled = false
+
+        LeftControlFrame.Parent = LeftControlGui    
+        LeftControlFrame.BackgroundTransparency = 1    
+        LeftControlFrame.Position = UDim2.new(0.02, 0, 0.7, -50)    
+        LeftControlFrame.Size = UDim2.new(0, 120, 0, 70)    
+        LeftControlFrame.Active = true    
+        LeftControlFrame.Draggable = false    
+
+        RotateLeftButton.Parent = LeftControlFrame    
+        RotateLeftButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)    
+        RotateLeftButton.Size = UDim2.new(0.45, 0, 1, 0)    
+        RotateLeftButton.Position = UDim2.new(0, 0, 0, 0)    
+        RotateLeftButton.Font = Enum.Font.GothamBold    
+        RotateLeftButton.Text = "◄"    
+        RotateLeftButton.TextColor3 = Color3.fromRGB(255, 255, 255)    
+        RotateLeftButton.TextScaled = true    
+
+        RotateRightButton.Parent = LeftControlFrame    
+        RotateRightButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)    
+        RotateRightButton.Size = UDim2.new(0.45, 0, 1, 0)    
+        RotateRightButton.Position = UDim2.new(0.55, 0, 0, 0)    
+        RotateRightButton.Font = Enum.Font.GothamBold    
+        RotateRightButton.Text = "►"    
+        RotateRightButton.TextColor3 = Color3.fromRGB(255, 255, 255)    
+        RotateRightButton.TextScaled = true    
+
+        RightControlGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")    
+        RightControlGui.ResetOnSpawn = false    
+        RightControlGui.Enabled = false    
+
+        RightControlFrame.Parent = RightControlGui    
+        RightControlFrame.BackgroundTransparency = 1    
+        RightControlFrame.Position = UDim2.new(0.88, -110, 0.7, -50)    
+        RightControlFrame.Size = UDim2.new(0, 110, 0, 110)    
+        RightControlFrame.Active = true    
+        RightControlFrame.Draggable = false    
+
+        ForwardButton.Parent = RightControlFrame    
+        ForwardButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)    
+        ForwardButton.Size = UDim2.new(0, 50, 0, 50)    
+        ForwardButton.Position = UDim2.new(0.3, 0, 0, 0)    
+        ForwardButton.Font = Enum.Font.GothamBold    
+        ForwardButton.Text = "▲"    
+        ForwardButton.TextColor3 = Color3.fromRGB(255, 255, 255)    
+        ForwardButton.TextScaled = true    
+
+        BackwardButton.Parent = RightControlFrame    
+        BackwardButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)    
+        BackwardButton.Size = UDim2.new(0, 50, 0, 50)    
+        BackwardButton.Position = UDim2.new(0.3, 0, 0.55, 0)    
+        BackwardButton.Font = Enum.Font.GothamBold    
+        BackwardButton.Text = "▼"    
+        BackwardButton.TextColor3 = Color3.fromRGB(255, 255, 255)    
+        BackwardButton.TextScaled = true
+    end
+end
+
+local function setupFlyInstances(character)
+    if not character or not character:FindFirstChild("HumanoidRootPart") then return end
+
+    if VelocityHandler then VelocityHandler:Destroy() end
+    if GyroHandler then GyroHandler:Destroy() end
+
+    VelocityHandler = Instance.new("BodyVelocity")
+    VelocityHandler.Name = velocityHandlerName
+    VelocityHandler.Parent = character.HumanoidRootPart
+    VelocityHandler.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+    VelocityHandler.Velocity = Vector3.new(0, constantDownVelocity, 0)
+
+    GyroHandler = Instance.new("BodyGyro")
+    GyroHandler.Name = gyroHandlerName
+    GyroHandler.Parent = character.HumanoidRootPart
+    GyroHandler.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+    GyroHandler.P = 1000
+    GyroHandler.D = 50
+    GyroHandler.CFrame = character.HumanoidRootPart.CFrame
+end
+
+local function EnableFlight()
+    local character = game.Players.Local
