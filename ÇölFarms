@@ -1,0 +1,108 @@
+local Players = game:GetService("Players")
+local TeleportService = game:GetService("TeleportService")
+local Lighting = game:GetService("Lighting")
+local LocalPlayer = Players.LocalPlayer
+
+local function temizleEkran()
+	for _, v in pairs(Lighting:GetChildren()) do
+		if v:IsA("BlurEffect") or v:IsA("ColorCorrectionEffect") or v:IsA("SunRaysEffect") or v:IsA("DepthOfFieldEffect") then
+			v:Destroy()
+		end
+	end
+	Lighting.Brightness = 2
+	Lighting.ClockTime = 14
+	Lighting.FogEnd = 100000
+	Lighting.FogStart = 0
+end
+
+local function guiOlustur()
+	local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+	if PlayerGui:FindFirstChild("SydearrGui") then PlayerGui.SydearrGui:Destroy() end
+
+	local gui = Instance.new("ScreenGui", PlayerGui)
+	gui.Name = "FarmGui"
+	gui.ResetOnSpawn = false
+
+	local frame = Instance.new("Frame", gui)
+	frame.Size = UDim2.new(0, 300, 0, 150)
+	frame.Position = UDim2.new(0.5, -150, 0.5, -75)
+	frame.BackgroundColor3 = Color3.new(0, 0, 0)
+	frame.Active = true
+	frame.Draggable = true
+
+	local border = Instance.new("UIStroke", frame)
+	border.Thickness = 2
+	border.Color = Color3.fromRGB(150, 150, 150)
+	border.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+
+	local corner = Instance.new("UICorner", frame)
+	corner.CornerRadius = UDim.new(0, 25)
+
+	local title = Instance.new("TextLabel", frame)
+	title.Size = UDim2.new(1, 0, 0, 40)
+	title.Position = UDim2.new(0, 0, 0, 0)
+	title.BackgroundTransparency = 1
+	title.Text = "Ravex Team Çöl Farm"
+	title.Font = Enum.Font.GothamBlack
+	title.TextColor3 = Color3.new(1, 1, 1)
+	title.TextScaled = true
+
+	local countdownLabel = Instance.new("TextLabel", frame)
+	countdownLabel.Size = UDim2.new(1, 0, 0, 60)
+	countdownLabel.Position = UDim2.new(0, 0, 0.5, -30)
+	countdownLabel.BackgroundTransparency = 1
+	countdownLabel.Font = Enum.Font.GothamBlack
+	countdownLabel.TextColor3 = Color3.new(1, 0, 0)
+	countdownLabel.TextScaled = true
+	countdownLabel.Text = "00:45"
+
+	return countdownLabel
+end
+
+task.spawn(function()
+	repeat task.wait() until game:IsLoaded()
+	task.wait(1)
+	temizleEkran()
+	local countdownLabel = guiOlustur()
+	local seconds = 45
+
+	while seconds >= 0 do
+		local min = math.floor(seconds / 60)
+		local sec = seconds % 60
+		countdownLabel.Text = string.format("%02d:%02d", min, sec)
+
+		if seconds == 42 and game.PlaceId ~= 6912372358 then
+			TeleportService:Teleport(6912372358)
+			break
+		end
+
+		if seconds == 26 and game.PlaceId == 6912372358 then
+			task.spawn(function()
+				pcall(function()
+					loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-FE-Kill-NPCs-or-bots-25445"))()
+				end)
+			end)
+		end
+
+		if seconds == 24 and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+			LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+		end
+
+		if seconds == 13 and game.PlaceId == 6912372358 then
+			task.spawn(function()
+				local cf = CFrame.new(328.540405, 1.62812448, -30.0937614)
+				if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+					LocalPlayer.Character:PivotTo(cf)
+				end
+			end)
+		end
+
+		if seconds == 0 then
+			TeleportService:Teleport(3231515867)
+			break
+		end
+
+		seconds -= 1
+		task.wait(1)
+	end
+end)
