@@ -1,0 +1,45 @@
+local rs = game:GetService("ReplicatedStorage")
+local players = game:GetService("Players")
+local damageRemote = rs:WaitForChild("SilahTA"):WaitForChild("SilahRemotes"):WaitForChild("Damage")
+
+local localPlayer = players.LocalPlayer
+local cam = workspace.CurrentCamera
+
+while true do
+    task.wait(0.015)
+
+    local char = localPlayer.Character or localPlayer.CharacterAdded:Wait()
+    local tool = char:FindFirstChild("AKM")
+    if not tool then continue end
+
+    local firePoint = tool:WaitForChild("Grip"):WaitForChild("FirePoint")
+
+    local count = 0
+    for _, player in pairs(players:GetPlayers()) do
+        if player ~= localPlayer and player.Character then
+            local targetChar = player.Character
+            local part = targetChar:FindFirstChild("Left Arm") or targetChar:FindFirstChild("LeftUpperArm") or targetChar:FindFirstChild("HumanoidRootPart")
+            local humanoid = targetChar:FindFirstChild("Humanoid")
+
+            if part and humanoid then
+                local partPos = part.Position
+                local direction = (partPos - firePoint.Position).Unit
+
+                local args = {
+                    [1] = partPos + Vector3.new(0, 0.1, 0),
+                    [2] = part,
+                    [3] = partPos,
+                    [4] = humanoid,
+                    [5] = tool,
+                    [6] = firePoint,
+                    [7] = cam.CFrame.Position,
+                    [8] = direction
+                }
+
+                damageRemote:FireServer(unpack(args))
+                count += 1
+                if count >= 65 then break end
+            end
+        end
+    end
+end
