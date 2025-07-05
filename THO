@@ -7,7 +7,7 @@ for _, v in ipairs(game:GetDescendants()) do
     end
 end
 if rewardRemote then
-    local duration = 60
+    local duration = 1000000
     local startTime = tick()
     while tick() - startTime < duration do
         pcall(function()
