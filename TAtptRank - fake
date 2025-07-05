@@ -1,0 +1,119 @@
+local p = game.Players.LocalPlayer
+local c = p.Character or p.CharacterAdded:Wait()
+local head = c:WaitForChild("Head")
+local frame = head:WaitForChild("Nameplate"):WaitForChild("Frame")
+local rankLabel = frame:WaitForChild("Rank")
+local nameLabel = frame:WaitForChild("Name")
+local teamLabel = frame:WaitForChild("Team")
+
+local gui = Instance.new("ScreenGui", p:WaitForChild("PlayerGui"))
+gui.Name = "FakeRankGUI"
+gui.ResetOnSpawn = false
+
+local toggleBtn = Instance.new("TextButton", gui)
+toggleBtn.Size = UDim2.new(0, 150, 0, 30)
+toggleBtn.Position = UDim2.new(0, 10, 0.5, -200)
+toggleBtn.Text = "GUI Aç / Kapat"
+toggleBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleBtn.Active = true
+toggleBtn.Draggable = true
+
+local main = Instance.new("Frame", gui)
+main.Size = UDim2.new(0, 280, 0, 420)
+main.Position = UDim2.new(0.5, -140, 0.5, -210)
+main.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+main.Active = true
+main.Draggable = true
+main.Visible = true
+
+toggleBtn.MouseButton1Click:Connect(function()
+	main.Visible = not main.Visible
+end)
+
+local layout = Instance.new("UIListLayout", main)
+layout.Padding = UDim.new(0, 5)
+layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+layout.VerticalAlignment = Enum.VerticalAlignment.Top
+
+local title = Instance.new("TextLabel", main)
+title.Size = UDim2.new(1, -10, 0, 30)
+title.Text = "TA-TPT Fake Rütbe | By: Enver"
+title.BackgroundColor3 = Color3.fromRGB(11, 11, 11)
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+local buttons = {
+	{Text = "OR-9/A", Rank = "OR-9/A Astsubay Kıdemli Başçavuş/Astsubay", RankColor = Color3.fromRGB(255, 255, 255), NameColor = Color3.fromRGB(120, 149, 184)},
+	{Text = "OF-1/A", Rank = "OF-1/A Asteğmen", RankColor = Color3.fromRGB(255, 255, 255), NameColor = Color3.fromRGB(211, 141, 0)},
+	{Text = "Paşa", Rank = "Paşa", RankColor = Color3.fromRGB(255, 255, 255), NameColor = Color3.fromRGB(176, 0, 0)},
+	{Text = "Genelkurmay", Rank = "Genelkurmay", RankColor = Color3.fromRGB(255, 255, 0), NameColor = Color3.fromRGB(255, 0, 0)},
+	{Text = "Yönetim Kurulu", Rank = "Yönetim Kurulu", RankColor = Color3.fromRGB(0, 0, 0), NameColor = Color3.fromRGB(0, 0, 0)}
+}
+
+for _, data in pairs(buttons) do
+	local btn = Instance.new("TextButton", main)
+	btn.Size = UDim2.new(1, -20, 0, 30)
+	btn.Text = data.Text
+	btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+	btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	btn.MouseButton1Click:Connect(function()
+		rankLabel.Text = data.Rank
+		rankLabel.TextColor3 = data.RankColor
+		nameLabel.TextColor3 = data.NameColor
+	end)
+end
+
+local function createInput(titleText)
+	local container = Instance.new("Frame")
+	container.Size = UDim2.new(1, -20, 0, 50)
+	container.BackgroundTransparency = 1
+
+	local title = Instance.new("TextLabel", container)
+	title.Size = UDim2.new(1, 0, 0.4, 0)
+	title.Position = UDim2.new(0, 0, 0, 0)
+	title.Text = titleText
+	title.BackgroundTransparency = 1
+	title.TextColor3 = Color3.fromRGB(255, 255, 255)
+	title.TextScaled = true
+
+	local box = Instance.new("TextBox", container)
+	box.Size = UDim2.new(1, 0, 0.6, 0)
+	box.Position = UDim2.new(0, 0, 0.4, 0)
+	box.Text = ""
+	box.TextScaled = true
+	box.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+	box.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+	return container, box
+end
+
+local nameContainer, nameBox = createInput("İsim")
+nameContainer.Parent = main
+
+local rankContainer, rankBox = createInput("Rütbe")
+rankContainer.Parent = main
+
+local teamContainer, teamBox = createInput("Takım")
+teamContainer.Parent = main
+
+nameBox.FocusLost:Connect(function(enter)
+	if enter and nameBox.Text ~= "" then
+		nameLabel.Text = nameBox.Text
+	end
+end)
+
+rankBox.FocusLost:Connect(function(enter)
+	if enter and rankBox.Text ~= "" then
+		rankLabel.Text = rankBox.Text
+	end
+end)
+
+teamBox.FocusLost:Connect(function(enter)
+	if enter and teamBox.Text ~= "" then
+		teamLabel.Text = teamBox.Text
+		local team = game.Teams:FindFirstChild(teamBox.Text)
+		if team then
+			teamLabel.TextColor3 = team.TeamColor.Color
+		end
+	end
+end)
