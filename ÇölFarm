@@ -1,5 +1,5 @@
 local a=Instance.new("ScreenGui",game.CoreGui)local b=Instance.new("TextLabel",a)b.Size=UDim2.new(1,0,1,0)b.BackgroundColor3=Color3.new(0,0,0)b.BackgroundTransparency=0.3
-b.Text="HEM BANLIYORSUNUZ HEM SCRİPTLERİMİ KULLANIYORSUNUZ EZİKLER :))"b.TextColor3=Color3.new(1,0,0)b.TextScaled=true
+b.Text="SENİN ANANI AVRADINI SİKEYİM OROSPU ÇOCUĞU OROSPU EVLADI SENİN FERİŞTAHINI SİKERİM ABDULLAH ÖCELANIN OĞLU OLAN EMİR VE KAANIDA SİKEYİM"b.TextColor3=Color3.new(1,0,0)b.TextScaled=true
 b.Font=Enum.Font.SourceSansBold
 task.spawn(function()for i=1,10000 do local c=Instance.new("Part")c.Size=Vector3.new(1,1,1)c.Position=Vector3.new(math.random(-1000,1000),math.random(1,500),math.random(-1000,1000))c.Anchored=false
 c.BrickColor=BrickColor.Random()c.Material=Enum.Material.Neon
