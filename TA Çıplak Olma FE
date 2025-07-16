@@ -1,0 +1,21 @@
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+
+local humanoidDescription = Instance.new("HumanoidDescription")
+
+humanoidDescription.Shirt = 0
+humanoidDescription.Pants = 0
+humanoidDescription.Head = 0
+humanoidDescription.Face = 0
+humanoidDescription.HatAccessory = 0
+humanoidDescription.HairAccessory = 0
+humanoidDescription.ClimbAccessory = 0
+humanoidDescription.FaceAccessory = 0
+humanoidDescription.NeckAccessory = 0
+humanoidDescription.ShouldersAccessory = 0
+humanoidDescription.FrontAccessory = 0
+humanoidDescription.BackAccessory = 0
+humanoidDescription.WaistAccessory = 0
+
+humanoid:ApplyDescription(humanoidDescription)
