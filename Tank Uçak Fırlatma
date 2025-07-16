@@ -1,0 +1,88 @@
+local gui = Instance.new("ScreenGui", game.CoreGui)
+gui.Name = "GUI"
+
+local anaCerceve = Instance.new("Frame", gui)
+anaCerceve.Size = UDim2.new(0, 420, 0, 260)
+anaCerceve.Position = UDim2.new(0.5, -210, 0.5, -130)
+anaCerceve.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+anaCerceve.Active = true
+
+local anaCerceveKenar = Instance.new("UICorner", anaCerceve)
+anaCerceveKenar.CornerRadius = UDim.new(0, 30)
+
+local kapatmaButonu = Instance.new("TextButton", anaCerceve)
+kapatmaButonu.Size = UDim2.new(0, 35, 0, 35)
+kapatmaButonu.Position = UDim2.new(1, -40, 0, 5)
+kapatmaButonu.BackgroundTransparency = 1
+kapatmaButonu.Text = "X"
+kapatmaButonu.Font = Enum.Font.GothamBlack
+kapatmaButonu.TextColor3 = Color3.fromRGB(255, 255, 255)
+kapatmaButonu.TextSize = 22
+
+kapatmaButonu.MouseButton1Click:Connect(function()
+gui:Destroy()
+end)
+
+local ucakButonu = Instance.new("TextButton", anaCerceve)
+ucakButonu.Size = UDim2.new(0, 350, 0, 50)
+ucakButonu.Position = UDim2.new(0.5, -175, 0.4, -30)
+ucakButonu.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+ucakButonu.Font = Enum.Font.GothamBlack
+ucakButonu.Text = "BTF Uçak Fırlatma"
+ucakButonu.TextColor3 = Color3.fromRGB(255, 255, 255)
+ucakButonu.TextSize = 20
+
+local ucakButonuKenar = Instance.new("UICorner", ucakButonu)
+ucakButonuKenar.CornerRadius = UDim.new(0, 25)
+
+local tankButonu = Instance.new("TextButton", anaCerceve)
+tankButonu.Size = UDim2.new(0, 350, 0, 50)
+tankButonu.Position = UDim2.new(0.5, -175, 0.4, 40)
+tankButonu.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+tankButonu.Font = Enum.Font.GothamBlack
+tankButonu.Text = "TA Tank Fırlatma"
+tankButonu.TextColor3 = Color3.fromRGB(255, 255, 255)
+tankButonu.TextSize = 20
+
+local tankButonuKenar = Instance.new("UICorner", tankButonu)
+tankButonuKenar.CornerRadius = UDim.new(0, 25)
+
+ucakButonu.MouseButton1Click:Connect(function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/enverscripts/Open-source/main/BTF"))()
+end)
+
+tankButonu.MouseButton1Click:Connect(function()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/enverscripts/Open-source/main/TA"))()
+end)
+
+local UIS = game:GetService("UserInputService")
+local dragTasi = false
+local dragPosisyon
+local başlangıçPozisyon
+
+anaCerceve.InputBegan:Connect(function(girdi)
+if girdi.UserInputType == Enum.UserInputType.MouseButton1 then
+dragTasi = true
+başlangıçPozisyon = girdi.Position
+dragPosisyon = anaCerceve.Position
+end
+end)
+
+UIS.InputChanged:Connect(function(girdi)
+if dragTasi and girdi.UserInputType == Enum.UserInputType.MouseMovement then
+local fark = girdi.Position - başlangıçPozisyon
+anaCerceve.Position = UDim2.new(
+dragPosisyon.X.Scale,
+dragPosisyon.X.Offset + fark.X,
+dragPosisyon.Y.Scale,
+dragPosisyon.Y.Offset + fark.Y
+)
+end
+end)
+
+UIS.InputEnded:Connect(function(girdi)
+if girdi.UserInputType == Enum.UserInputType.MouseButton1 then
+dragTasi = false
+end
+end)
+
