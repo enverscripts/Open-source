@@ -42,7 +42,7 @@ local function guiOlustur()
 	title.Size = UDim2.new(1, 0, 0, 40)
 	title.Position = UDim2.new(0, 0, 0, 0)
 	title.BackgroundTransparency = 1
-	title.Text = "Ravex Team Çöl Farm"
+	title.Text = "Sydearr Team Çöl Farm"
 	title.Font = Enum.Font.GothamBlack
 	title.TextColor3 = Color3.new(1, 1, 1)
 	title.TextScaled = true
