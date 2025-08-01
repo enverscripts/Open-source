@@ -1,12 +1,12 @@
 local Solara = loadstring(game:HttpGet("https://raw.githubusercontent.com/destylolx/solara/main/main.lua"))()
 local Window = Solara:Window("ExpoWare")
 
-Window:Button("Open Dex", function()
+Window:Button("Dex", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/DarkNetworks/Infinite-Yield/refs/heads/main/dex.lua"))()
 end)
 
-Window:Button("Script 2", function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/xxxhubTeaamammama/Hhhhhhh/main/Script2.lua"))()
+Window:Button("Anti Kick", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/enverscripts/Open-source/main/KRv2Ksv"))()
 end)
 
 Window:Button("Script 3", function()
