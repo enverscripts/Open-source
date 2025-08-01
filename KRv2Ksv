@@ -1,0 +1,78 @@
+local screenGuiAntiKick = Instance.new("ScreenGui")
+screenGuiAntiKick.Name = "AntiKickInterface"
+screenGuiAntiKick.ResetOnSpawn = false
+screenGuiAntiKick.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local mainInterfaceFrame = Instance.new("Frame")
+mainInterfaceFrame.Size = UDim2.new(0, 320, 0, 180)
+mainInterfaceFrame.Position = UDim2.new(0.5, -160, 0.5, -90)
+mainInterfaceFrame.BackgroundColor3 = Color3.new(0, 0, 0)
+mainInterfaceFrame.Active = true
+mainInterfaceFrame.Draggable = true
+mainInterfaceFrame.Parent = screenGuiAntiKick
+
+local cornerDesignForMainFrame = Instance.new("UICorner")
+cornerDesignForMainFrame.CornerRadius = UDim.new(0, 20)
+cornerDesignForMainFrame.Parent = mainInterfaceFrame
+
+local titleTextLabel = Instance.new("TextLabel")
+titleTextLabel.Text = "Anti Kick"
+titleTextLabel.Font = Enum.Font.GothamBold
+titleTextLabel.TextColor3 = Color3.new(1, 1, 1)
+titleTextLabel.TextSize = 22
+titleTextLabel.BackgroundTransparency = 1
+titleTextLabel.Size = UDim2.new(1, -40, 0, 40)
+titleTextLabel.Position = UDim2.new(0, 10, 0, 0)
+titleTextLabel.TextXAlignment = Enum.TextXAlignment.Left
+titleTextLabel.Parent = mainInterfaceFrame
+
+local closeButtonForInterface = Instance.new("TextButton")
+closeButtonForInterface.Text = "X"
+closeButtonForInterface.Font = Enum.Font.GothamBold
+closeButtonForInterface.TextColor3 = Color3.new(1, 1, 1)
+closeButtonForInterface.TextSize = 20
+closeButtonForInterface.BackgroundTransparency = 1
+closeButtonForInterface.Size = UDim2.new(0, 30, 0, 30)
+closeButtonForInterface.Position = UDim2.new(1, -35, 0, 5)
+closeButtonForInterface.Parent = mainInterfaceFrame
+
+closeButtonForInterface.MouseButton1Click:Connect(function()
+        screenGuiAntiKick:Destroy()
+end)
+
+local antiKickToggleButton = Instance.new("TextButton")
+antiKickToggleButton.Text = "Başlat"
+antiKickToggleButton.Font = Enum.Font.GothamBold
+antiKickToggleButton.TextColor3 = Color3.new(1, 1, 1)
+antiKickToggleButton.TextSize = 20
+antiKickToggleButton.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+antiKickToggleButton.Size = UDim2.new(0, 200, 0, 50)
+antiKickToggleButton.Position = UDim2.new(0.5, -100, 0.5, -25)
+antiKickToggleButton.Parent = mainInterfaceFrame
+
+local cornerDesignForToggleButton = Instance.new("UICorner")
+cornerDesignForToggleButton.CornerRadius = UDim.new(0, 16)
+cornerDesignForToggleButton.Parent = antiKickToggleButton
+
+local isAntiKickProtectionEnabled = false
+local storedKickHookFunction
+
+antiKickToggleButton.MouseButton1Click:Connect(function()
+        if isAntiKickProtectionEnabled == false then
+                isAntiKickProtectionEnabled = true
+                storedKickHookFunction = hookmetamethod(game, "__namecall", function(self, ...)
+                        local calledMethodName = getnamecallmethod()
+                        if tostring(calledMethodName) == "Kick" and self == game.Players.LocalPlayer then
+                                return
+                        end
+                        return storedKickHookFunction(self, ...)
+                end)
+                antiKickToggleButton.Text = "Kapat"
+                antiKickToggleButton.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
+        else
+                isAntiKickProtectionEnabled = false
+                storedKickHookFunction = nil
+                antiKickToggleButton.Text = "Başlat"
+                antiKickToggleButton.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+        end
+end)
