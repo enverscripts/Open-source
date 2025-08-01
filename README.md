@@ -17,8 +17,8 @@ Window:Button("RemoteEvents", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/enverscripts/Open-source/main/remote"))()
 end)
 
-Window:Button("Script 5", function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/xxxhubTeaamammama/Hhhhhhh/main/Script5.lua"))()
+Window:Button("AC6 Sound", function()
+    loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-FE-Ac6-Music-Vulnerability-25536"))()
 end)
 
 Window:Button("Script 6", function()
