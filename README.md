@@ -9,12 +9,12 @@ Window:Button("Anti Kick", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/enverscripts/Open-source/main/KRv2Ksv"))()
 end)
 
-Window:Button("Remote Spy", function()
+Window:Button("RemoteSpy", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/enverscripts/Open-source/main/SVb3KqV"))()
 end)
 
-Window:Button("Script 4", function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/xxxhubTeaamammama/Hhhhhhh/main/Script4.lua"))()
+Window:Button("RemoteEvents", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/enverscripts/Open-source/main/remote"))()
 end)
 
 Window:Button("Script 5", function()
