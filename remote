@@ -1,0 +1,64 @@
+local p = game.Players.LocalPlayer
+local g = Instance.new("ScreenGui", p:WaitForChild("PlayerGui"))
+g.Name = "RemoteEventsUI"
+g.ResetOnSpawn = false
+g.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+local f = Instance.new("Frame", g)
+f.Size = UDim2.new(0, 400, 0, 300)
+f.Position = UDim2.new(0.5, -200, 0.5, -150)
+f.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+f.Active = true
+f.Draggable = true
+f.BorderSizePixel = 0
+Instance.new("UICorner", f).CornerRadius = UDim.new(0, 20)
+
+local t = Instance.new("TextLabel", f)
+t.Size = UDim2.new(1, -40, 0, 40)
+t.Position = UDim2.new(0, 10, 0, 0)
+t.BackgroundTransparency = 1
+t.Text = "RemoteEvents"
+t.TextColor3 = Color3.fromRGB(255, 255, 255)
+t.Font = Enum.Font.GothamBlack
+t.TextScaled = true
+
+local x = Instance.new("TextButton", f)
+x.Size = UDim2.new(0, 30, 0, 30)
+x.Position = UDim2.new(1, -35, 0, 5)
+x.BackgroundTransparency = 1
+x.Text = "X"
+x.TextColor3 = Color3.fromRGB(255, 255, 255)
+x.Font = Enum.Font.GothamBlack
+x.TextScaled = true
+x.MouseButton1Click:Connect(function() g:Destroy() end)
+
+local s = Instance.new("ScrollingFrame", f)
+s.Size = UDim2.new(1, -20, 1, -50)
+s.Position = UDim2.new(0, 10, 0, 45)
+s.CanvasSize = UDim2.new(0, 0, 0, 0)
+s.ScrollBarThickness = 5
+s.BackgroundTransparency = 1
+
+local l = Instance.new("UIListLayout", s)
+l.Padding = UDim.new(0, 5)
+l.SortOrder = Enum.SortOrder.Name
+
+l:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+	s.CanvasSize = UDim2.new(0, 0, 0, l.AbsoluteContentSize.Y + 10)
+end)
+
+for _, v in ipairs(game:GetDescendants()) do
+	if v:IsA("RemoteEvent") then
+		local b = Instance.new("TextButton", s)
+		b.Size = UDim2.new(1, 0, 0, 35)
+		b.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+		b.TextColor3 = Color3.fromRGB(255, 255, 255)
+		b.Font = Enum.Font.GothamBlack
+		b.TextScaled = true
+		b.Text = v:GetFullName()
+		Instance.new("UICorner", b).CornerRadius = UDim.new(0, 12)
+		b.MouseButton1Click:Connect(function()
+			pcall(function() v:FireServer() end)
+		end)
+	end
+end
