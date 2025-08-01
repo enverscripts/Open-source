@@ -9,8 +9,8 @@ Window:Button("Anti Kick", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/enverscripts/Open-source/main/KRv2Ksv"))()
 end)
 
-Window:Button("Script 3", function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/xxxhubTeaamammama/Hhhhhhh/main/Script3.lua"))()
+Window:Button("Remote Spy", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/enverscripts/Open-source/main/SVb3KqV"))()
 end)
 
 Window:Button("Script 4", function()
