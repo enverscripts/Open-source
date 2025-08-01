@@ -1,1 +1,200 @@
-https://raw.githubusercontent.com/So1ux/So1ux/9e05aa715396f6859e3b734578c16c93878c9a85/Remote%20spy%20raw
+--[[
+Cyn's cheap onclientevent spy. Remote Spy's twin!
+
+V 0.2 Warning: Use at your own risk. This has no protections against anti-exploit detection.
+This version is vulnerable to detection through over 20 methods.
+This is also made for executors that doesn't have getconnections. 
+And that is why you have to put it on auto execute to spoof connections with hookmetamethod.
+
+OnClientInvoke will give additional infos like, what it returns. in JSON as well.
+
+In V 0.3 We will fix JSON issues and you will also be able to see scripts connecting to the remotes. 
+
+V 0.4 onwards will be improving bypass of detections.
+
+Supports:
+OnClientEvent hooks
+OnClientInvoke hooks
+Viewing received arguments
+
+Issues:
+Json argument doesn't fully visualize some null arguments. 
+Null arguments are usually instances or things that cannot be converted to string.
+
+Extras:
+ONLY HOOKS ONTO REMOTES THAT SCRIPTS HAVE HOOKED INTO 
+
+]]
+
+-- uses gui to lua for the interface. (syntax's retarded products roblox plugin)
+local function CreateInstance(cls,props)
+	local inst = Instance.new(cls)
+	for i,v in pairs(props) do
+		inst[i] = v
+	end
+	return inst
+end
+
+local ScreenGui = CreateInstance('ScreenGui',{DisplayOrder=0,Enabled=true,ResetOnSpawn=true,Name='ScreenGui', Parent=game:GetService("CoreGui")})
+local BaseFrame = CreateInstance('Frame',{Style=Enum.FrameStyle.Custom,Active=false,AnchorPoint=Vector2.new(0, 0),BackgroundColor3=Color3.new(0.482353, 0.478431, 0.482353),BackgroundTransparency=0,BorderColor3=Color3.new(0, 0, 0),BorderSizePixel=0,ClipsDescendants=false,Draggable=false,Position=UDim2.new(0.626446307, 0, 0.167567566, 0),Rotation=0,Selectable=false,Size=UDim2.new(0.233884305, 0, 0.490540534, 0),SizeConstraint=Enum.SizeConstraint.RelativeXY,Visible=true,ZIndex=1,Name = 'BaseFrame',Parent = ScreenGui})
+local ScrollingFrame = CreateInstance('ScrollingFrame',{BottomImage='rbxasset://textures/ui/Scroll/scroll-bottom.png',CanvasPosition=Vector2.new(0, 0),CanvasSize=UDim2.new(0, 0, 1, 0),MidImage='rbxasset://textures/ui/Scroll/scroll-middle.png',ScrollBarThickness=8,ScrollingEnabled=true,TopImage='rbxasset://textures/ui/Scroll/scroll-top.png',Active=false,AnchorPoint=Vector2.new(0, 0),BackgroundColor3=Color3.new(0.196078, 0.196078, 0.196078),BackgroundTransparency=0,BorderColor3=Color3.new(0.105882, 0.164706, 0.207843),BorderSizePixel=1,ClipsDescendants=true,Draggable=false,Position=UDim2.new(-0.00161257898, 0, -0.000430924178, 0),Rotation=0,Selectable=true,Size=UDim2.new(1, 0, 0.598000884, 0),SizeConstraint=Enum.SizeConstraint.RelativeXY,Visible=true,ZIndex=1,Name='ScrollingFrame',Parent = BaseFrame})
+local UIListLayout = CreateInstance('UIListLayout', {Padding = UDim.new(0, 5), FillDirection = Enum.FillDirection.Vertical, HorizontalAlignment = Enum.HorizontalAlignment.Center, SortOrder = Enum.SortOrder.LayoutOrder, VerticalAlignment = Enum.VerticalAlignment.Top, Name = 'UIListLayout', Parent = ScrollingFrame })
+local ButtonFrame = CreateInstance('Frame',{Style=Enum.FrameStyle.Custom,Active=false,AnchorPoint=Vector2.new(0, 0),BackgroundColor3=Color3.new(0.247059, 0.247059, 0.25098),BackgroundTransparency=0,BorderColor3=Color3.new(0, 0, 0),BorderSizePixel=0,ClipsDescendants=false,Draggable=false,Position=UDim2.new(-0.00353335333, 0, 0.595041156, 0),Rotation=0,Selectable=false,Size=UDim2.new(1.00353312, 0, 0.288154274, 0),SizeConstraint=Enum.SizeConstraint.RelativeXY,Visible=true,ZIndex=1,Name = 'ButtonFrame',Parent = BaseFrame})
+local Ignore = CreateInstance('TextButton',{Font=Enum.Font.SourceSans,FontSize=Enum.FontSize.Size14,Text='ignore',TextColor3=Color3.new(1, 1, 1),TextScaled=false,TextSize=14,TextStrokeColor3=Color3.new(0, 0, 0),TextStrokeTransparency=1,TextTransparency=0,TextWrapped=false,TextXAlignment=Enum.TextXAlignment.Center,TextYAlignment=Enum.TextYAlignment.Center,AutoButtonColor=true,Modal=false,Selected=false,Style=Enum.ButtonStyle.Custom,Active=true,AnchorPoint=Vector2.new(0, 0),BackgroundColor3=Color3.new(0.2, 0.2, 0.203922),BackgroundTransparency=0,BorderColor3=Color3.new(0, 0, 0),BorderSizePixel=2,ClipsDescendants=false,Draggable=false,Position=UDim2.new(0.0528169237, 0, 0.105162814, 0),Rotation=0,Selectable=true,Size=UDim2.new(0.219718322, 0, 0.195602506, 0),SizeConstraint=Enum.SizeConstraint.RelativeXY,Visible=true,ZIndex=1,Name='Ignore',Parent = ButtonFrame})
+local ViewInfo = CreateInstance('TextButton',{Font=Enum.Font.SourceSans,FontSize=Enum.FontSize.Size14,Text='view info',TextColor3=Color3.new(1, 1, 1),TextScaled=false,TextSize=14,TextStrokeColor3=Color3.new(0, 0, 0),TextStrokeTransparency=1,TextTransparency=0,TextWrapped=false,TextXAlignment=Enum.TextXAlignment.Center,TextYAlignment=Enum.TextYAlignment.Center,AutoButtonColor=true,Modal=false,Selected=false,Style=Enum.ButtonStyle.Custom,Active=true,AnchorPoint=Vector2.new(0, 0),BackgroundColor3=Color3.new(0.2, 0.2, 0.203922),BackgroundTransparency=0,BorderColor3=Color3.new(0, 0, 0),BorderSizePixel=2,ClipsDescendants=false,Draggable=false,Position=UDim2.new(0.387324125, 0, 0.0956025869, 0),Rotation=0,Selectable=true,Size=UDim2.new(0.219718322, 0, 0.195602506, 0),SizeConstraint=Enum.SizeConstraint.RelativeXY,Visible=true,ZIndex=1,Name='ViewInfo',Parent = ButtonFrame})
+local Clear = CreateInstance('TextButton',{Font=Enum.Font.SourceSans,FontSize=Enum.FontSize.Size14,Text='clear',TextColor3=Color3.new(1, 1, 1),TextScaled=false,TextSize=14,TextStrokeColor3=Color3.new(0, 0, 0),TextStrokeTransparency=1,TextTransparency=0,TextWrapped=false,TextXAlignment=Enum.TextXAlignment.Center,TextYAlignment=Enum.TextYAlignment.Center,AutoButtonColor=true,Modal=false,Selected=false,Style=Enum.ButtonStyle.Custom,Active=true,AnchorPoint=Vector2.new(0, 0),BackgroundColor3=Color3.new(0.2, 0.2, 0.203922),BackgroundTransparency=0,BorderColor3=Color3.new(0, 0, 0),BorderSizePixel=2,ClipsDescendants=false,Draggable=false,Position=UDim2.new(0.718310177, 0, 0.105162814, 0),Rotation=0,Selectable=true,Size=UDim2.new(0.219718322, 0, 0.195602506, 0),SizeConstraint=Enum.SizeConstraint.RelativeXY,Visible=true,ZIndex=1,Name='Clear',Parent = ButtonFrame})
+local Block = CreateInstance('TextButton',{Font=Enum.Font.SourceSans,FontSize=Enum.FontSize.Size14,Text='block',TextColor3=Color3.new(1, 1, 1),TextScaled=false,TextSize=14,TextStrokeColor3=Color3.new(0, 0, 0),TextStrokeTransparency=1,TextTransparency=0,TextWrapped=false,TextXAlignment=Enum.TextXAlignment.Center,TextYAlignment=Enum.TextYAlignment.Center,AutoButtonColor=true,Modal=false,Selected=false,Style=Enum.ButtonStyle.Custom,Active=true,AnchorPoint=Vector2.new(0, 0),BackgroundColor3=Color3.new(0.2, 0.2, 0.203922),BackgroundTransparency=0,BorderColor3=Color3.new(0, 0, 0),BorderSizePixel=2,ClipsDescendants=false,Draggable=false,Position=UDim2.new(0.0528169237, 0, 0.497132242, 0),Rotation=0,Selectable=true,Size=UDim2.new(0.219718322, 0, 0.195602506, 0),SizeConstraint=Enum.SizeConstraint.RelativeXY,Visible=true,ZIndex=1,Name='Block',Parent = ButtonFrame})
+local ViewFrame = CreateInstance('Frame',{Style=Enum.FrameStyle.Custom,Active=false,AnchorPoint=Vector2.new(0, 0),BackgroundColor3=Color3.new(0.482353, 0.478431, 0.482353),BackgroundTransparency=0,BorderColor3=Color3.new(0, 0, 0),BorderSizePixel=0,ClipsDescendants=false,Draggable=false,Position=UDim2.new(0.23636359, 0, 0.326108128, 0),Rotation=0,Selectable=false,Size=UDim2.new(0.296694219, 0, 0.318918914, 0),SizeConstraint=Enum.SizeConstraint.RelativeXY,Visible=false,ZIndex=1,Name = 'ViewFrame',Parent = ScreenGui})
+local FullPath = CreateInstance('TextLabel',{Font=Enum.Font.SourceSans,FontSize=Enum.FontSize.Size11,Text='',TextColor3=Color3.new(0, 0, 0),TextScaled=false,TextSize=11,TextStrokeColor3=Color3.new(0, 0, 0),TextStrokeTransparency=1,TextTransparency=0,TextWrapped=true,TextXAlignment=Enum.TextXAlignment.Center,TextYAlignment=Enum.TextYAlignment.Center,Active=false,AnchorPoint=Vector2.new(0, 0),BackgroundColor3=Color3.new(1, 1, 1),BackgroundTransparency=0,BorderColor3=Color3.new(0, 0, 0),BorderSizePixel=0,ClipsDescendants=false,Draggable=false,Position=UDim2.new(0, 0, 0, 0),Rotation=0,Selectable=false,Size=UDim2.new(0.860616267, 0, 0.161016956, 0),SizeConstraint=Enum.SizeConstraint.RelativeXY,Visible=true,ZIndex=1,Name='FullPath',Parent = ViewFrame})
+local Close = CreateInstance('TextButton',{Font=Enum.Font.SourceSans,FontSize=Enum.FontSize.Size14,Text='',TextColor3=Color3.new(1, 0.196078, 0.211765),TextScaled=true,TextSize=14,TextStrokeColor3=Color3.new(0, 0, 0),TextStrokeTransparency=1,TextTransparency=0,TextWrapped=true,TextXAlignment=Enum.TextXAlignment.Center,TextYAlignment=Enum.TextYAlignment.Center,AutoButtonColor=true,Modal=false,Selected=false,Style=Enum.ButtonStyle.Custom,Active=true,AnchorPoint=Vector2.new(0, 0),BackgroundColor3=Color3.new(0.2, 0.2, 0.203922),BackgroundTransparency=0,BorderColor3=Color3.new(0, 0, 0),BorderSizePixel=0,ClipsDescendants=false,Draggable=false,Position=UDim2.new(0.860616267, 0, -0.000769469712, 0),Rotation=0,Selectable=true,Size=UDim2.new(0.138938397, 0, 0.165941492, 0),SizeConstraint=Enum.SizeConstraint.RelativeXY,Visible=true,ZIndex=1,Name='Close',Parent = ViewFrame})
+local Arguments = CreateInstance('TextLabel',{Font=Enum.Font.SourceSans,FontSize=Enum.FontSize.Size14,Text='Arguments (JSON): []',TextColor3=Color3.new(0, 0, 0),TextScaled=false,TextSize=13,TextStrokeColor3=Color3.new(0, 0, 0),TextStrokeTransparency=1,TextTransparency=0,TextWrapped=true,TextXAlignment=Enum.TextXAlignment.Left,TextYAlignment=Enum.TextYAlignment.Top,Active=false,AnchorPoint=Vector2.new(0, 0),BackgroundColor3=Color3.new(0.615686, 0.611765, 0.619608),BackgroundTransparency=0,BorderColor3=Color3.new(0, 0, 0),BorderSizePixel=0,ClipsDescendants=false,Draggable=false,Position=UDim2.new(-8.500718e-08, 0, 0.161017075, 0),Rotation=0,Selectable=false,Size=UDim2.new(0.999554753, 0, 0.628813446, 0),SizeConstraint=Enum.SizeConstraint.RelativeXY,Visible=true,ZIndex=1,Name='Arguments',Parent = ViewFrame})
+local Template = CreateInstance('TextButton',{Font=Enum.Font.SourceSans,FontSize=Enum.FontSize.Size14,Text='Remote (RE)',TextColor3=Color3.new(1, 1, 1),TextScaled=false,TextSize=14,TextStrokeColor3=Color3.new(0, 0, 0),TextStrokeTransparency=1,TextTransparency=0,TextWrapped=false,TextXAlignment=Enum.TextXAlignment.Center,TextYAlignment=Enum.TextYAlignment.Center,AutoButtonColor=true,Modal=false,Selected=false,Style=Enum.ButtonStyle.Custom,Active=true,AnchorPoint=Vector2.new(0, 0),BackgroundColor3=Color3.new(0.454902, 0.45098, 0.462745),BackgroundTransparency=0,BorderColor3=Color3.new(0, 0, 0),BorderSizePixel=0,ClipsDescendants=false,Draggable=false,Position=UDim2.new(0.0494699664, 0, 0.0783141553, 0),Rotation=0,Selectable=true,Size=UDim2.new(0.845160127, 0, 0.0699969232, 0),SizeConstraint=Enum.SizeConstraint.RelativeXY,Visible=false,ZIndex=1,Name='Template',Parent = ScreenGui})
+local RemoveIgnores = CreateInstance('TextButton',{Font=Enum.Font.SourceSans,FontSize=Enum.FontSize.Size14,Text='clr ignores',TextColor3=Color3.new(1, 1, 1),TextScaled=false,TextSize=14,TextStrokeColor3=Color3.new(0, 0, 0),TextStrokeTransparency=1,TextTransparency=0,TextWrapped=false,TextXAlignment=Enum.TextXAlignment.Center,TextYAlignment=Enum.TextYAlignment.Center,AutoButtonColor=true,Modal=false,Selected=false,Style=Enum.ButtonStyle.Custom,Active=true,AnchorPoint=Vector2.new(0, 0),BackgroundColor3=Color3.new(0.2, 0.2, 0.203922),BackgroundTransparency=0,BorderColor3=Color3.new(0, 0, 0),BorderSizePixel=2,ClipsDescendants=false,Draggable=false,Position=UDim2.new(0.387324125, 0, 0.497132242, 0),Rotation=0,Selectable=true,Size=UDim2.new(0.219718322, 0, 0.195602506, 0),SizeConstraint=Enum.SizeConstraint.RelativeXY,Visible=true,ZIndex=1,Name='RemoveIgnores',Parent = ButtonFrame})
+
+
+
+
+
+
+local UIDragDetector1 = Instance.new("UIDragDetector", BaseFrame)
+local UIDragDetector2 = Instance.new("UIDragDetector", ViewFrame)
+
+Template.Parent = nil
+local selected = nil
+local arraysOfData = {}
+local ignoredRemotes = {}
+
+function genid()
+	return game:GetService("HttpService"):GenerateGUID(false)
+end
+
+function linkButtonToClass(array)
+	local button = Template:Clone()
+	array.button = button
+	button.Size = UDim2.new(0.9, -10, 0, 25)
+	button.Visible = true
+	button.MouseButton1Click:Connect(function()
+		selected = array
+		if ViewFrame.Visible == true then
+			updateViewFrame()
+		end
+	end)
+	button.Text = array.remote.Name .. string.format(" (%s)", array.rtype)
+	button.Parent = ScrollingFrame
+	ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 10)
+end
+
+function clear()
+	for _, v in pairs(ScrollingFrame:GetChildren()) do
+		if not v:IsA("UIListLayout") then
+			v:Destroy()
+		end
+	end
+end
+
+function tojson(argumentArray)
+	return game:GetService("HttpService"):JSONEncode(argumentArray)
+end
+
+function updateViewFrame()
+	if selected then
+		FullPath.Text = selected.remote:GetFullName()
+		Arguments.Text = string.format("Arguments (JSON): %s", selected.jsonarguments)
+		if selected.jsonreturnarguments~=nil then
+			Arguments.Text = string.format("%s\nReturning Arguments: [%s]", Arguments.Text, selected.jsonreturnarguments)
+		end
+	end
+end
+
+function makeArray(remote, arguments, jsonargs)
+	local template = {
+		button = nil;
+		remote = nil;
+		jsonarguments = "";
+		jsonreturnarguments = nil;
+		id = "";
+		rtype = (remote:IsA("RemoteEvent") and "RE") or "RF"; 
+	}
+
+	template.id = genid()
+	template.jsonarguments = tojson(arguments)
+	template.jsonreturnarguments = (jsonargs and tojson(jsonargs)) or nil
+	template.remote = remote
+	linkButtonToClass(template)
+
+end
+
+function sendNotification(text)
+	game:GetService("StarterGui"):SetCore("SendNotification", {
+		Title = "Client Spy";
+		Text = text;
+		Duration = 3;
+	})
+end
+
+
+Close.MouseButton1Click:Connect(function()
+	ViewFrame.Visible = false
+end)
+ViewInfo.MouseButton1Click:Connect(function()
+	if selected then
+		updateViewFrame()
+		ViewFrame.Visible = true
+	end
+end)
+Clear.MouseButton1Click:Connect(function()
+	clear()
+end)
+Ignore.MouseButton1Click:Connect(function()
+	if selected then
+		if selected.remote then
+			table.insert(ignoredRemotes, selected.remote)
+			sendNotification(string.format("ignored: %s (%s)", selected.remote.Name, selected.rtype))
+		end
+	end
+end)
+
+RemoveIgnores.MouseButton1Click:Connect(function()
+	table.clear(ignoredRemotes)
+end)
+
+local oldRemoteEvent
+oldRemoteEvent = hookmetamethod(game, "__index", newcclosure(function(self, index)
+	if not checkcaller() then
+		if index == "OnClientEvent" then
+			if self:IsA("RemoteEvent") then
+				oldRemoteEvent(self, index):Connect(function(...)
+					local args = {...}
+					if not table.find(ignoredRemotes, self) then
+						makeArray(self, args)
+					end
+				end)
+				return
+			end
+		end
+	end
+	return oldRemoteEvent(self, index)
+end))
+
+local oldRemoteFunction
+oldRemoteFunction = hookmetamethod(game, "__newindex", newcclosure(function(self, index, value)
+	if not checkcaller() then
+		if index == "OnClientInvoke" then
+			if self:IsA("RemoteFunction") then
+				return oldRemoteFunction(self, index, function(...)
+					local args = {...}
+					local jsonargs = {}
+					for i, v in pairs({value(...)}) do
+						table.insert(jsonargs, v)
+					end
+					if not table.find(ignoredRemotes, self) then
+						makeArray(self, args, jsonargs)
+					end
+
+					return unpack(jsonargs)
+				end)
+			end
+		end
+	end
+	return oldRemoteFunction(self, index, value)
+end))
