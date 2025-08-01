@@ -21,8 +21,8 @@ Window:Button("AC6 Sound", function()
     loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-FE-Ac6-Music-Vulnerability-25536"))()
 end)
 
-Window:Button("Script 6", function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/xxxhubTeaamammama/Hhhhhhh/main/Script6.lua"))()
+Window:Button("Inventory Copy", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/enverscripts/Open-source/main/Envanter%20Kopyalama"))()
 end)
 
 Window:Button("Script 7", function()
