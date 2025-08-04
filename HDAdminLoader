@@ -1,0 +1,8 @@
+game.StarterGui:SetCore("ChatMakeSystemMessage", {
+    Text = 'HD Admin Ranks "Owner"';
+    Color = Color3.fromRGB(255, 255, 0);
+    Font = Enum.Font.SourceSansBold;
+    FontSize = Enum.FontSize.Size24;
+})
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/valkyrieny/HDAdmin-FE/main/Loader.lua"))()
