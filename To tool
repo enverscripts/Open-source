@@ -1,5 +1,5 @@
 local tool = Instance.new("Tool")
-tool.Name = "To Tool"
+tool.Name = "Teleport Tool"
 tool.RequiresHandle = false
 
 tool.Activated:Connect(function()
