@@ -38,7 +38,7 @@ layout.VerticalAlignment = Enum.VerticalAlignment.Top
 
 local title = Instance.new("TextLabel", main)
 title.Size = UDim2.new(1, -10, 0, 30)
-title.Text = "TA-TPT Fake Rütbe | By: Enver"
+title.Text = "OE Hub"
 title.BackgroundColor3 = Color3.fromRGB(11, 11, 11)
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
 
