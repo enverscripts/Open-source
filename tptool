@@ -1,0 +1,11 @@
+local tool = Instance.new("Tool")
+tool.Name = "Teleport Tool"
+tool.RequiresHandle = false
+tool.Parent = game.Players.LocalPlayer.Backpack
+
+tool.Activated:Connect(function()
+    local mouse = game.Players.LocalPlayer:GetMouse()
+    if mouse and mouse.Hit then
+        game.Players.LocalPlayer.Character:MoveTo(mouse.Hit.p)
+    end
+end)
