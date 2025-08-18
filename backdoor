@@ -1,0 +1,525 @@
+--[[  
+    Bu script V0C0N1337 tarafindan yapilmistir methdolar harkinian ve arian black kardeslerimden alinmistir iyi kullanimlar xd turkiyede bende baska iyi fe bypassser mi var be kardesim :p
+--]]
+
+local player = game.Players.LocalPlayer
+local gui = Instance.new("ScreenGui")
+gui.Name = "tatrolvehilexx"
+gui.ResetOnSpawn = false
+gui.IgnoreGuiInset = true
+gui.Parent = player:WaitForChild("PlayerGui")
+
+
+local function playSound(id, parent, vol, looped)
+    local s = Instance.new("Sound", parent)
+    s.SoundId = "rbxassetid://"..tostring(id)
+    s.Volume = vol or 1
+    s.Looped = looped or false
+    s:Play()
+    game.Debris:AddItem(s, 10)
+    return s
+end
+
+-- Skybox Setup  
+pcall(function()
+    local asset = "rbxthumb://type=Asset&id=99904850377589&w=150&h=150"
+    local sky = Instance.new("Sky")
+    sky.Name = "tatrolvehilexxSky"
+    sky.SkyboxBk = asset
+    sky.SkyboxDn = asset
+    sky.SkyboxFt = asset
+    sky.SkyboxLf = asset
+    sky.SkyboxRt = asset
+    sky.SkyboxUp = asset
+    sky.Parent = game.Lighting
+end)
+
+-- Discord Bar (always visible, now with icon)
+local discordBar = Instance.new("Frame", gui)
+discordBar.Size = UDim2.new(1, 0, 0, 36)
+discordBar.Position = UDim2.new(0, 0, 0, 0)
+discordBar.BackgroundColor3 = Color3.fromRGB(0, 255, 64)
+discordBar.BorderSizePixel = 0
+
+local discordIcon = Instance.new("ImageLabel", discordBar)
+discordIcon.Size = UDim2.new(0, 32, 0, 32)
+discordIcon.Position = UDim2.new(0, 2, 0, 2)
+discordIcon.Image = "rbxthumb://type=Asset&id=99904850377589&w=150&h=150"
+discordIcon.BackgroundTransparency = 1
+
+local discordTxt = Instance.new("TextLabel", discordBar)
+discordTxt.Size = UDim2.new(1, -38, 1, 0)
+discordTxt.Position = UDim2.new(0, 38, 0, 0)
+discordTxt.BackgroundTransparency = 1
+discordTxt.Text = " ENVERHERZAMANHERYERDE"
+discordTxt.TextColor3 = Color3.fromRGB(0,0,0)
+discordTxt.Font = Enum.Font.GothamBold
+discordTxt.TextScaled = true
+
+-- Main Mobile Frame (added shadow, improved drag)
+local main = Instance.new("Frame", gui)
+main.Size = UDim2.new(0, 340, 0, 440)
+main.Position = UDim2.new(0.5, -170, 0.53, -215)
+main.BackgroundColor3 = Color3.fromRGB(15,15,15)
+main.BorderColor3 = Color3.fromRGB(0,255,64)
+main.BorderSizePixel = 4
+main.Active = true
+main.Draggable = true
+local mainCorner = Instance.new("UICorner", main)
+mainCorner.CornerRadius = UDim.new(0, 34)
+
+-- Drop shadow
+local shadow = Instance.new("ImageLabel", main)
+shadow.BackgroundTransparency = 1
+shadow.Image = "rbxassetid://1316045217"
+shadow.Size = UDim2.new(1,40,1,40)
+shadow.Position = UDim2.new(0,-20,0,-20)
+shadow.ZIndex = 0
+
+-- Icon
+local icon = Instance.new("ImageLabel", main)
+icon.Size = UDim2.new(0, 48, 0, 48)
+icon.Position = UDim2.new(0, 12, 0, 10)
+icon.BackgroundTransparency = 1
+icon.Image = "rbxthumb://type=Asset&id=99904850377589&w=150&h=150"
+
+-- Title
+local title = Instance.new("TextLabel", main)
+title.Size = UDim2.new(1, -60, 0, 36)
+title.Position = UDim2.new(0, 65, 0, 12)
+title.BackgroundTransparency = 1
+title.Text = "tatrolvehilexx GUI"
+title.TextColor3 = Color3.fromRGB(0,255,64)
+title.TextSize = 22
+title.Font = Enum.Font.GothamBold
+
+-- Page System
+local categories = {"Combat", "Movement", "Server", "Utility", "Secret"}
+local currentPage = 1
+local buttons = {}
+
+local pageLabel = Instance.new("TextLabel", main)
+pageLabel.Size = UDim2.new(1, 0, 0, 30)
+pageLabel.Position = UDim2.new(0,0,0,60)
+pageLabel.BackgroundColor3 = Color3.fromRGB(20,20,20)
+pageLabel.TextColor3 = Color3.fromRGB(0,255,64)
+pageLabel.TextSize = 17
+pageLabel.Font = Enum.Font.GothamSemibold
+
+local nextBtn = Instance.new("TextButton", main)
+nextBtn.Size = UDim2.new(0, 44, 0, 36)
+nextBtn.Position = UDim2.new(1, -50, 1, -42)
+nextBtn.Text = ">"
+nextBtn.TextColor3 = Color3.fromRGB(0,255,64)
+nextBtn.BackgroundColor3 = Color3.fromRGB(12,12,12)
+nextBtn.Font = Enum.Font.GothamBlack
+local nextCorner = Instance.new("UICorner", nextBtn)
+nextCorner.CornerRadius = UDim.new(0, 10)
+
+local prevBtn = Instance.new("TextButton", main)
+prevBtn.Size = UDim2.new(0, 44, 0, 36)
+prevBtn.Position = UDim2.new(0, 6, 1, -42)
+prevBtn.Text = "<"
+prevBtn.TextColor3 = Color3.fromRGB(0,255,64)
+prevBtn.BackgroundColor3 = Color3.fromRGB(12,12,12)
+prevBtn.Font = Enum.Font.GothamBlack
+local prevCorner = Instance.new("UICorner", prevBtn)
+prevCorner.CornerRadius = UDim.new(0, 10)
+
+-- Button System
+local function clearButtons()
+    for _, b in ipairs(buttons) do
+        b:Destroy()
+    end
+    table.clear(buttons)
+end
+
+local actions = {
+    Combat = {
+        {"Kill All", function()
+            playSound(3824308862, gui, 1)
+            for _, p in ipairs(game.Players:GetPlayers()) do
+                if p ~= player and p.Character and p.Character:FindFirstChild("Humanoid") then
+                    p.Character.Humanoid.Health = 0
+                end
+            end
+        end},
+        {"Explode All", function()
+            playSound(3824308862, gui, 1)
+            for _, p in ipairs(game.Players:GetPlayers()) do
+                if p ~= player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                    Instance.new("Explosion", workspace).Position = p.Character.HumanoidRootPart.Position
+                end
+            end
+        end},
+        {"Fling All", function()
+            playSound(3824308862, gui, 1)
+            for _, p in ipairs(game.Players:GetPlayers()) do
+                if p ~= player and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+                    p.Character.HumanoidRootPart.Velocity = Vector3.new(1e7,1e7,1e7)
+                end
+            end
+        end},
+        {"Nuke Fist", function()
+            playSound(3824308862, gui, 1)
+            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                local pos = player.Character.HumanoidRootPart.Position
+                for i=1,7 do
+                    local e = Instance.new("Explosion", workspace)
+                    e.BlastRadius = 40
+                    e.Position = pos + Vector3.new(math.random(-20,20),0,math.random(-20,20))
+                end
+            end
+        end},
+        {"Ban Hammer (visual)", function()
+            playSound(3824308862, gui, 1)
+            if player.Character then
+                local h = Instance.new("Part", workspace)
+                h.Size = Vector3.new(6,34,6)
+                h.Position = player.Character.HumanoidRootPart.Position + Vector3.new(9,17,0)
+                h.BrickColor = BrickColor.new("Bright green")
+                h.Anchored = false
+                h.Touched:Connect(function(hit) hit:Destroy() end)
+                game.Debris:AddItem(h, 4)
+            end
+        end},
+        {"Laser Eyes", function()
+            playSound(3824308862, gui, 1)
+            local char = player.Character
+            if char and char:FindFirstChild("Head") then
+                for i=1,8 do
+                    local beam = Instance.new("Part", workspace)
+                    beam.Anchored = true
+                    beam.CanCollide = false
+                    beam.Size = Vector3.new(1,1,60)
+                    beam.BrickColor = BrickColor.new("Lime green")
+                    beam.CFrame = char.Head.CFrame * CFrame.new(0,0,-30)
+                    game.Debris:AddItem(beam, 0.3)
+                end
+            end
+        end},
+    },
+    Movement = {
+        {"Infinite Jump", function()
+            playSound(3824308862, gui, 0.5)
+            if not _G.infj then
+                _G.infj = true
+                game:GetService("UserInputService").JumpRequest:Connect(function()
+                    if player.Character and player.Character:FindFirstChildOfClass("Humanoid") then
+                        player.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
+                    end
+                end)
+            end
+        end},
+        {"Fly Mode", function()
+            playSound(3824308862, gui, 0.5)
+            local torso = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+            if torso and not _G.flying then
+                _G.flying = true
+                local bv = Instance.new("BodyVelocity", torso)
+                bv.MaxForce = Vector3.new(1e9,1e9,1e9)
+                bv.Velocity = Vector3.new(0,0,0)
+                local UIS = game:GetService("UserInputService")
+                UIS.InputBegan:Connect(function(i,g)
+                    if g then return end
+                    if i.KeyCode == Enum.KeyCode.W then bv.Velocity = Vector3.new(0,80,0) end
+                    if i.KeyCode == Enum.KeyCode.S then bv.Velocity = Vector3.new(0,-80,0) end
+                    if i.KeyCode == Enum.KeyCode.Space then bv.Velocity = Vector3.new(0,0,80) end
+                end)
+                UIS.InputEnded:Connect(function() bv.Velocity = Vector3.new(0,0,0) end)
+                game.Debris:AddItem(bv, 40)
+            end
+        end},
+        {"Speed x7", function()
+            playSound(3824308862, gui, 0.5)
+            if player.Character and player.Character:FindFirstChildOfClass("Humanoid") then
+                player.Character:FindFirstChildOfClass("Humanoid").WalkSpeed = 110
+            end
+        end},
+        {"Teleport Forward", function()
+            playSound(3824308862, gui, 0.5)
+            if player.Character and player.Character.PrimaryPart then
+                player.Character:SetPrimaryPartCFrame(player.Character.PrimaryPart.CFrame * CFrame.new(0,0,-70))
+            end
+        end},
+        {"Invisible", function()
+            playSound(3824308862, gui, 0.5)
+            for _, p in ipairs(player.Character:GetDescendants()) do
+                if p:IsA("BasePart") and p.Name~="HumanoidRootPart" then p.Transparency=1 end
+            end
+        end},
+        {"Teleport To Player", function()
+            playSound(3824308862, gui, 0.5)
+            local others = {}
+            for _,p in ipairs(game.Players:GetPlayers()) do if p ~= player then table.insert(others,p) end end
+            if #others > 0 then
+                local t = others[math.random(1,#others)]
+                if t.Character and t.Character.PrimaryPart and player.Character and player.Character.PrimaryPart then
+                    player.Character:SetPrimaryPartCFrame(t.Character.PrimaryPart.CFrame * CFrame.new(0,0,5))
+                end
+            end
+        end},
+    },
+    Server = {
+        {"Lag Server (LOOP!)", function()
+            playSound(3824308862, gui, 1)
+            while true do
+                workspace:Clone()
+                wait(0.07)
+            end
+        end},
+        {"Delete All Parts", function()
+            playSound(3824308862, gui, 1)
+            for _,v in ipairs(workspace:GetDescendants()) do
+                if v:IsA("BasePart") then v:Destroy() end
+            end
+        end},
+        {"Gravity OFF", function()
+            playSound(3824308862, gui, 1)
+            workspace.Gravity = 0
+        end},
+        {"Rain Parts", function()
+            playSound(3824308862, gui, 1)
+            for i=1,45 do
+                local p = Instance.new("Part",workspace)
+                p.Size = Vector3.new(3,3,3)
+                p.Position = Vector3.new(math.random(-120,120),220,math.random(-120,120))
+                p.BrickColor = BrickColor.Random()
+                p.Anchored = false
+                p.CanCollide = true
+                game.Debris:AddItem(p, 15)
+                wait(0.03)
+            end
+        end},
+        {"Explode Map", function()
+            playSound(3824308862, gui, 1)
+            for _,v in ipairs(workspace:GetDescendants()) do
+                if v:IsA("BasePart") then
+                    local e = Instance.new("Explosion",workspace)
+                    e.Position = v.Position
+                end
+            end
+        end},
+        {"Spin Map", function()
+            playSound(3824308862, gui, 1)
+            for _,p in ipairs(workspace:GetChildren()) do
+                if p:IsA("BasePart") then
+                    p.RotVelocity = Vector3.new(0,17,0)
+                end
+            end
+        end},
+    },
+    Utility = {
+        {"God Mode", function()
+            playSound(3824308862, gui, 1)
+            local h = player.Character:FindFirstChildOfClass("Humanoid")
+            h.MaxHealth = 1e12
+            h.Health = 1e12
+        end},
+        {"ESP", function()
+            playSound(3824308862, gui, 1)
+            for _,p in ipairs(game.Players:GetPlayers()) do
+                if p ~= player and p.Character and p.Character:FindFirstChild("Head") then
+                    local box = Instance.new("SelectionBox", p.Character.Head)
+                    box.Adornee = p.Character.Head
+                    box.Color3 = Color3.fromRGB(0,255,0)
+                    game.Debris:AddItem(box,15)
+                end
+            end
+        end},
+        {"TP Tool", function()
+            playSound(3824308862, gui, 1)
+            local tool = Instance.new("Tool",player.Backpack)
+            tool.RequiresHandle = false
+            tool.Name = "TP TOOL"
+            tool.Activated:Connect(function()
+                local mouse = player:GetMouse()
+                if mouse then
+                    player.Character:SetPrimaryPartCFrame(CFrame.new(mouse.Hit.p + Vector3.new(0,4,0)))
+                end
+            end)
+        end},
+        {"Clone Yourself", function()
+            playSound(3824308862, gui, 1)
+            if player.Character then
+                local c = player.Character:Clone()
+                c.Parent = workspace
+                c:MoveTo(player.Character.PrimaryPart.Position + Vector3.new(9,0,0))
+                game.Debris:AddItem(c, 25)
+            end
+        end},
+        {"Part Spawner", function()
+            playSound(3824308862, gui, 1)
+            for i=1,11 do
+                local p = Instance.new("Part",workspace)
+                p.Size = Vector3.new(math.random(3,8),math.random(3,8),math.random(3,8))
+                p.Position = player.Character.PrimaryPart.Position + Vector3.new(math.random(-22,22),24,math.random(-22,22))
+                p.BrickColor = BrickColor.Random()
+                p.Anchored = false
+                game.Debris:AddItem(p, 13)
+            end
+        end},
+        {"Click Destroy (Tool)", function()
+            playSound(3824308862, gui, 1)
+            local tool = Instance.new("Tool",player.Backpack)
+            tool.RequiresHandle = false
+            tool.Name = "Destroyer"
+            tool.Activated:Connect(function()
+                local mouse = player:GetMouse()
+                if mouse and mouse.Target then mouse.Target:Destroy() end
+            end)
+        end},
+        {"Change Name", function()
+            playSound(3824308862, gui, 1)
+            player.DisplayName = "tatrolvehilexx"
+        end},
+    },
+    Secret = {
+        {"tatrolvehilexx Rises", function()
+            playSound(3824308862, gui, 1)
+            local msg = Instance.new("Message",workspace)
+            msg.Text = "V0C0NHERZAMANHERYERDE"
+            game.Debris:AddItem(msg,4)
+            for i=1,11 do
+                local c = player.Character:Clone()
+                c.Parent = workspace
+                c:MoveTo(player.Character.PrimaryPart.Position + Vector3.new(math.random(-18,18),0,math.random(-18,18)))
+                game.Debris:AddItem(c, 19)
+            end
+        end},
+        {"Clone Army x150", function()
+            playSound(3824308862, gui, 1)
+            for i=1,150 do
+                local c = player.Character:Clone()
+                c.Parent = workspace
+                c:MoveTo(player.Character.PrimaryPart.Position + Vector3.new(math.random(-120,120),0,math.random(-120,120)))
+                game.Debris:AddItem(c, 18)
+                wait(0.01)
+            end
+        end},
+        {"Rainbow World", function()
+            playSound(3824308862, gui, 1)
+            for _,v in ipairs(workspace:GetDescendants()) do
+                if v:IsA("BasePart") then
+                    coroutine.wrap(function()
+                        for i=1,60 do
+                            v.BrickColor = BrickColor.Random()
+                            wait(0.05)
+                        end
+                    end)()
+                end
+            end
+        end},
+        {"Glitch Camera", function()
+            playSound(3824308862, gui, 1)
+            local cam = workspace.CurrentCamera
+            for i=1,40 do
+                cam.CFrame = cam.CFrame * CFrame.Angles(math.rad(math.random(-10,10)),math.rad(math.random(-10,10)),math.rad(math.random(-10,10)))
+                wait(0.07)
+            end
+        end},
+        {"Jumpscare", function()
+            playSound(3824308862, gui, 1.5)
+            local sc = Instance.new("ScreenGui", player.PlayerGui)
+            local img = Instance.new("ImageLabel", sc)
+            img.Size = UDim2.new(1,0,1,0)
+            img.Image = "rbxthumb://type=Asset&id=134977781897109w=150&h=150"
+            img.BackgroundTransparency = 1
+            game.Debris:AddItem(sc,1.5)
+        end},
+    }
+}
+
+local function createButton(name, pos, action)
+    local btn = Instance.new("TextButton", main)
+    btn.Size = UDim2.new(0.95, 0, 0, 38)
+    btn.Position = pos
+    btn.BackgroundColor3 = Color3.fromRGB(19,19,19)
+    btn.Text = name
+    btn.TextColor3 = Color3.fromRGB(0,255,64)
+    btn.TextSize = 18
+    btn.Font = Enum.Font.GothamSemibold
+    local btnCorner = Instance.new("UICorner", btn)
+    btnCorner.CornerRadius = UDim.new(0, 10)
+    table.insert(buttons, btn)
+    btn.MouseButton1Click:Connect(action)
+end
+
+local function updatePage()
+    clearButtons()
+    local category = categories[currentPage]
+    pageLabel.Text = "["..category.."] - Page "..currentPage
+    local acts = actions[category]
+    for i, v in ipairs(acts) do
+        createButton(v[1], UDim2.new(0.025, 0, 0, 100+(i-1)*45), v[2])
+    end
+end
+
+nextBtn.MouseButton1Click:Connect(function()
+    if currentPage < #categories then
+        currentPage = currentPage + 1
+        updatePage()
+        playSound(3824308862, gui, 0.15)
+    end
+end)
+prevBtn.MouseButton1Click:Connect(function()
+    if currentPage > 1 then
+        currentPage = currentPage - 1
+        updatePage()
+        playSound(3824308862, gui, 0.15)
+    end
+end)
+updatePage()
+
+-- Secret God Mode Popup (bottom right, mobile-friendly, NEW SOUND)
+local secretBtn = Instance.new("TextButton", gui)
+secretBtn.Size = UDim2.new(0, 92, 0, 44)
+secretBtn.Position = UDim2.new(1, -108, 1, -56)
+secretBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+secretBtn.BorderColor3 = Color3.fromRGB(0,255,64)
+secretBtn.BorderSizePixel = 2
+secretBtn.Text = "DO NOT PRESS"
+secretBtn.TextColor3 = Color3.fromRGB(0,255,64)
+secretBtn.Font = Enum.Font.GothamBlack
+local secretCorner = Instance.new("UICorner", secretBtn)
+secretCorner.CornerRadius = UDim.new(0, 14)
+
+local godFrame = Instance.new("Frame", gui)
+godFrame.Size = UDim2.new(0, 340, 0, 150)
+godFrame.Position = UDim2.new(0.5, -170, 0.89, 0)
+godFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+godFrame.BorderColor3 = Color3.fromRGB(0,255,64)
+godFrame.BorderSizePixel = 4
+godFrame.Visible = false
+local godCorner = Instance.new("UICorner", godFrame)
+godCorner.CornerRadius = UDim.new(0, 14)
+
+local msgHolder = Instance.new("ScrollingFrame", godFrame)
+msgHolder.Size = UDim2.new(1, -12, 1, -16)
+msgHolder.Position = UDim2.new(0, 6, 0, 8)
+msgHolder.BackgroundTransparency = 1
+msgHolder.CanvasSize = UDim2.new(0,0,6,0)
+msgHolder.ScrollBarImageColor3 = Color3.fromRGB(0,255,64)
+msgHolder.BorderSizePixel = 0
+
+local function addGodMsg(txt)
+    local l = Instance.new("TextLabel", msgHolder)
+    l.Size = UDim2.new(1, 0, 0, 22)
+    l.BackgroundTransparency = 1
+    l.Text = txt
+    l.TextColor3 = Color3.fromRGB(0,255,64)
+    l.TextScaled = true
+    l.Font = Enum.Font.GothamBlack
+    msgHolder.CanvasSize = UDim2.new(0,0,0,#msgHolder:GetChildren()*22)
+end
+
+secretBtn.MouseButton1Click:Connect(function()
+    godFrame.Visible = true
+    playSound(3824308862, gui, 1, true)
+    coroutine.wrap(function()
+        while godFrame.Visible do
+            addGodMsg("AĞLAMAYIN")
+            wait(0.24)
+        end
+    end)()
+end)
