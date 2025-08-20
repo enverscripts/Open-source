@@ -88,7 +88,7 @@ local title = Instance.new("TextLabel", main)
 title.Size = UDim2.new(1, -60, 0, 36)
 title.Position = UDim2.new(0, 65, 0, 12)
 title.BackgroundTransparency = 1
-title.Text = "tatrolvehilexx GUI"
+title.Text = "BACKDOOR"
 title.TextColor3 = Color3.fromRGB(0,255,64)
 title.TextSize = 22
 title.Font = Enum.Font.GothamBold
@@ -518,7 +518,7 @@ secretBtn.MouseButton1Click:Connect(function()
     playSound(3824308862, gui, 1, true)
     coroutine.wrap(function()
         while godFrame.Visible do
-            addGodMsg("AĞLAMAYIN")
+            addGodMsg("HACKED BY ENVER")
             wait(0.24)
         end
     end)()
